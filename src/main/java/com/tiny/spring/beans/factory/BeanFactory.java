@@ -1,7 +1,6 @@
 package com.tiny.spring.beans.factory;
 
 import com.tiny.spring.beans.BeansException;
-import com.tiny.spring.beans.factory.config.BeanDefinition;
 
 /**
  * @author: markus
@@ -13,6 +12,7 @@ import com.tiny.spring.beans.factory.config.BeanDefinition;
 public interface BeanFactory {
     /**
      * 根据beanName获取Bean实例
+     *
      * @param beanName
      * @return
      * @throws BeansException
@@ -20,8 +20,18 @@ public interface BeanFactory {
     Object getBean(String beanName) throws BeansException;
 
     /**
-     * 注册Bean配置元信息
-     * @param beanDefinition
+     * 判断当前容器中是否包含beanName的实例
+     *
+     * @param beanName
+     * @return
      */
-    void registerBeanDefinition(BeanDefinition beanDefinition);
+    Boolean containsBean(String beanName);
+
+    /**
+     * 注册单例Bean
+     *
+     * @param beanName
+     * @param obj
+     */
+    void registerBean(String beanName, Object obj);
 }

@@ -2,6 +2,7 @@ package com.tiny.spring.beans.factory.xml;
 
 import com.tiny.spring.beans.factory.BeanFactory;
 import com.tiny.spring.beans.factory.config.BeanDefinition;
+import com.tiny.spring.beans.factory.support.SimpleBeanFactory;
 import com.tiny.spring.core.io.Resource;
 import org.dom4j.Element;
 
@@ -13,9 +14,9 @@ import org.dom4j.Element;
  * It's my honor to share what I've learned with you!
  */
 public class XmlBeanDefinitionReader {
-    BeanFactory beanFactory;
+    SimpleBeanFactory beanFactory;
 
-    public XmlBeanDefinitionReader(BeanFactory beanFactory) {
+    public XmlBeanDefinitionReader(SimpleBeanFactory beanFactory) {
         this.beanFactory = beanFactory;
     }
 
@@ -25,7 +26,7 @@ public class XmlBeanDefinitionReader {
             String beanId = element.attributeValue("id");
             String className = element.attributeValue("class");
             BeanDefinition beanDefinition = new BeanDefinition(beanId, className);
-            this.beanFactory.registerBeanDefinition(beanDefinition);
+            this.beanFactory.registerBeanDefinition(beanId, beanDefinition);
         }
     }
 }
