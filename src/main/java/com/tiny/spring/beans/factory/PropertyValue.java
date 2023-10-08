@@ -8,12 +8,18 @@ package com.tiny.spring.beans.factory;
  * It's my honor to share what I've learned with you!
  */
 public class PropertyValue {
+    private final String type;
     private final String name;
     private final Object value;
 
-    public PropertyValue(String name, Object value) {
+    public PropertyValue(String type, String name, Object value) {
+        this.type = type;
         this.name = name;
         this.value = value;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public String getName() {

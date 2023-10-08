@@ -1,4 +1,20 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <beans>
     <bean id="aService" class="com.tiny.spring.test.service.impl.AServiceImpl"></bean>
+
+    <!--setter 注入-->
+    <bean id="a1" class="com.tiny.spring.test.bean.A">
+        <property name="property1" value="property1"/>
+        <property name="property2" value="property2"/>
+        <property name="property3" value="property3"/>
+        <property type="Integer" name="age" value="24"/>
+    </bean>
+
+    <!--构造器 注入-->
+    <bean id="a2" class="com.tiny.spring.test.bean.A">
+        <constructor-arg name="property1" value="property1"/>
+        <constructor-arg name="property2" value="property2"/>
+        <constructor-arg name="property3" value="property3"/>
+        <property type="Integer" name="age" value="24"/>
+    </bean>
 </beans>

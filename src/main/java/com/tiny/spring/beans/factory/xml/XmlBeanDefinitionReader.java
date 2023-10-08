@@ -1,10 +1,12 @@
 package com.tiny.spring.beans.factory.xml;
 
-import com.tiny.spring.beans.factory.BeanFactory;
+import com.tiny.spring.beans.factory.*;
 import com.tiny.spring.beans.factory.config.BeanDefinition;
 import com.tiny.spring.beans.factory.support.SimpleBeanFactory;
 import com.tiny.spring.core.io.Resource;
 import org.dom4j.Element;
+
+import java.util.List;
 
 /**
  * @author: markus
@@ -26,6 +28,27 @@ public class XmlBeanDefinitionReader {
             String beanId = element.attributeValue("id");
             String className = element.attributeValue("class");
             BeanDefinition beanDefinition = new BeanDefinition(beanId, className);
+            // 处理属性
+            List<Element> propertyElements = element.elements("property");
+            PropertyValues pvs = new PropertyValues();
+            for (Element propertyElement : propertyElements) {
+                String pType = propertyElement.attributeValue("type");
+                String pName = propertyElement.attributeValue("name");
+                String pValue = propertyElement.attributeValue("value");
+                pvs.addPropertyValue(new PropertyValue(pType, pName, pValue));
+            }
+            beanDefinition.setPropertyValues(pvs);
+
+            // 处理构造器参数
+            List<Element> constructorArgumentElements = element.elements("constructor-arg");
+            ArgumentValues avs = new ArgumentValues();
+            for (Element constructorArgumentElement : constructorArgumentElements) {
+                String aType = constructorArgumentElement.attributeValue("type");
+                String aName = constructorArgumentElement.attributeValue("name");
+                String aValue = constructorArgumentElement.attributeValue("value");
+                avs.addArgumentValue(new ArgumentValue(aValue, aType, aName));
+            }
+            beanDefinition.setConstructorArgumentValues(avs);
             this.beanFactory.registerBeanDefinition(beanId, beanDefinition);
         }
     }
