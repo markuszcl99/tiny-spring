@@ -25,13 +25,11 @@ public interface BeanFactory {
      * @param beanName
      * @return
      */
-    Boolean containsBean(String beanName);
+    boolean containsBean(String beanName);
 
-    /**
-     * 注册单例Bean
-     *
-     * @param beanName
-     * @param obj
-     */
-    void registerBean(String beanName, Object obj);
+    boolean isSingleton(String beanName);
+
+    boolean isPrototype(String beanName);
+
+    Class<?> getType(String beanName);
 }

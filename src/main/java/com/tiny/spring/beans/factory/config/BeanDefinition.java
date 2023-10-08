@@ -108,4 +108,12 @@ public class BeanDefinition {
     public void setScope(String scope) {
         this.scope = scope;
     }
+
+    public boolean isSingleton() {
+        return this.scope.equals(SCOPE_SINGLETON);
+    }
+
+    public boolean isPrototype() {
+        return this.scope.equals(SCOPE_PROTOTYPE);
+    }
 }
