@@ -41,7 +41,7 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
                 try {
                     singleton = createBean(beanDefinition);
                 } catch (BeansException e) {
-                    e.printStackTrace();
+                    throw e;
                 }
                 // 注册Bean实例
                 this.registerSingleton(beanDefinition.getId(), singleton);
@@ -137,8 +137,16 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
             throw new BeansException("bean constructor invoke error,bean id is" + beanDefinition.getId());
         }
 
-        // 创建实例后，进行属性赋值
-        PropertyValues pvs = beanDefinition.getPropertyValues();
+        handleProperties(beanDefinition, clazz, obj);
+
+        return obj;
+    }
+
+    private void handleProperties(BeanDefinition bd, Class<?> clazz, Object obj) throws BeansException {
+        // 处理属性
+        System.out.println("handle properties for bean : " + bd.getId());
+        // 如果有属性值的话，进行属性赋值
+        PropertyValues pvs = bd.getPropertyValues();
         if (!pvs.isEmpty()) {
             for (int i = 0; i < pvs.getPropertyValues().length; i++) {
                 // 对每一个属性，分数据类型分别处理
@@ -146,21 +154,35 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
                 String pType = propertyValue.getType();
                 String pName = propertyValue.getName();
                 Object pValue = propertyValue.getValue();
+                boolean isRef = propertyValue.isRef();
+
                 Class[] paramTypes = new Class[1];
                 Object[] paramValues = new Object[1];
-                if ("String".equals(pType) || "java.lang.String".equals(pType)) {
-                    paramTypes[0] = String.class;
-                    paramValues[0] = pValue;
-                } else if ("Integer".equals(pType) || "java.lang.Integer".equals(pType)) {
-                    paramTypes[0] = Integer.class;
-                    paramValues[0] = Integer.valueOf((String) pValue);
-                } else if ("int".equals(pType)) {
-                    paramTypes[0] = int.class;
-                    paramValues[0] = Integer.valueOf((String) pValue);
-                } else { // 默认为string
-                    paramTypes[0] = String.class;
-                    paramValues[0] = pValue;
+                if (!isRef) {
+                    // 如果不是 ref，只是普通属性，则对该属性分数据类型处理
+                    if ("String".equals(pType) || "java.lang.String".equals(pType)) {
+                        paramTypes[0] = String.class;
+                        paramValues[0] = pValue;
+                    } else if ("Integer".equals(pType) || "java.lang.Integer".equals(pType)) {
+                        paramTypes[0] = Integer.class;
+                        paramValues[0] = Integer.valueOf((String) pValue);
+                    } else if ("int".equals(pType)) {
+                        paramTypes[0] = int.class;
+                        paramValues[0] = Integer.valueOf((String) pValue);
+                    } else { // 默认为string
+                        paramTypes[0] = String.class;
+                        paramValues[0] = pValue;
+                    }
+                } else {
+                    // 是 ref，则通过 getBean()方式获取引用Bean实例
+                    try {
+                        paramTypes[0] = Class.forName(pType);
+                        paramValues[0] = getBean((String) pValue);
+                    } catch (ClassNotFoundException e) {
+                        throw new BeansException("ref bean " + pValue + " not found!");
+                    }
                 }
+
 
                 // 按照setXxx规范查找setter方法，调用setter方法设置属性
                 String methodName = "set" + pName.substring(0, 1).toUpperCase() + pName.substring(1);
@@ -169,11 +191,10 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
                     method = clazz.getMethod(methodName, paramTypes);
                     method.invoke(obj, paramValues);
                 } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                    throw new BeansException("bean setter method invoke error,bean id is " + beanDefinition.getId() + ",method is " + methodName);
+                    throw new BeansException("bean setter method invoke error,bean id is " + bd.getId() + ",method is " + methodName);
                 }
 
             }
         }
-        return obj;
     }
 }

@@ -1,11 +1,13 @@
 package com.tiny.spring.beans.factory.xml;
 
+import com.sun.media.sound.RIFFReader;
 import com.tiny.spring.beans.factory.*;
 import com.tiny.spring.beans.factory.config.BeanDefinition;
 import com.tiny.spring.beans.factory.support.SimpleBeanFactory;
 import com.tiny.spring.core.io.Resource;
 import org.dom4j.Element;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,13 +33,27 @@ public class XmlBeanDefinitionReader {
             // 处理属性
             List<Element> propertyElements = element.elements("property");
             PropertyValues pvs = new PropertyValues();
+            // 存储属性中的引用对象 bean的id
+            List<String> refs = new ArrayList<>();
             for (Element propertyElement : propertyElements) {
                 String pType = propertyElement.attributeValue("type");
                 String pName = propertyElement.attributeValue("name");
                 String pValue = propertyElement.attributeValue("value");
-                pvs.addPropertyValue(new PropertyValue(pType, pName, pValue));
+                String pRef = propertyElement.attributeValue("ref");
+                String pV = "";
+                boolean isRef = false;
+                if (pValue != null && !pValue.equals("")) {
+                    pV = pValue;
+                } else if (pRef != null && !pRef.equals("")) {
+                    isRef = true;
+                    pV = pRef;
+                    refs.add(pRef);
+                }
+                pvs.addPropertyValue(new PropertyValue(pType, pName, pV, isRef));
             }
             beanDefinition.setPropertyValues(pvs);
+            String[] refArray = refs.toArray(new String[0]);
+            beanDefinition.setDependsOn(refArray);
 
             // 处理构造器参数
             List<Element> constructorArgumentElements = element.elements("constructor-arg");

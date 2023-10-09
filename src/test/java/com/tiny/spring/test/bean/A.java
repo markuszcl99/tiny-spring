@@ -14,6 +14,8 @@ public class A {
 
     private Integer age;
 
+    private B b;
+
     public A() {
     }
 
@@ -55,6 +57,14 @@ public class A {
         this.age = age;
     }
 
+    public B getB() {
+        return b;
+    }
+
+    public void setB(B b) {
+        this.b = b;
+    }
+
     @Override
     public String toString() {
         return "A{" +
@@ -62,6 +72,7 @@ public class A {
                 ", property2='" + property2 + '\'' +
                 ", property3='" + property3 + '\'' +
                 ", age=" + age +
+                ", b=" + b +
                 '}';
     }
 }
