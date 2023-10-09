@@ -10,6 +10,7 @@ package com.tiny.spring.test.bean;
 public class B {
     private String property1;
     private String property2;
+    private A a;
 
     public B() {
     }
@@ -33,6 +34,14 @@ public class B {
 
     public void setProperty2(String property2) {
         this.property2 = property2;
+    }
+
+    public A getA() {
+        return a;
+    }
+
+    public void setA(A a) {
+        this.a = a;
     }
 
     @Override

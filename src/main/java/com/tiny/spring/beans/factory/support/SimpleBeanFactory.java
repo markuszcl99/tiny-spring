@@ -33,18 +33,23 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
         // 先尝试直接拿bean实例
         Object singleton = getSingleton(beanName);
         if (singleton == null) {
-            BeanDefinition beanDefinition = beanDefinitionMap.get(beanName);
-            if (beanDefinition == null) {
-                throw new BeansException("The bean name does not exit. bean name [" + beanName + "]");
-            } else {
-                // 获取Bean的定义
-                try {
-                    singleton = createBean(beanDefinition);
-                } catch (BeansException e) {
-                    throw e;
+            // 如果没有实例，则尝试从早期Bean引用缓存中去获取一下 todo 先在这里获取下，后续会像spring源码一样 抽象到DefaultSingletonBeanRegistry中去。
+            singleton = this.earlySingletonObjects.get(beanName);
+            if (singleton == null) {
+                // 如果早期Bean引用缓存中还是没有，那就老老实实创建实例吧
+                BeanDefinition beanDefinition = beanDefinitionMap.get(beanName);
+                if (beanDefinition == null) {
+                    throw new BeansException("The bean name does not exit. bean name [" + beanName + "]");
+                } else {
+                    // 获取Bean的定义
+                    try {
+                        singleton = createBean(beanDefinition);
+                    } catch (BeansException e) {
+                        throw e;
+                    }
+                    // 注册最终成形的Bean实例
+                    this.registerSingleton(beanDefinition.getId(), singleton);
                 }
-                // 注册Bean实例
-                this.registerSingleton(beanDefinition.getId(), singleton);
             }
         }
         return singleton;
@@ -98,13 +103,36 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
 
     private Object createBean(BeanDefinition beanDefinition) throws BeansException {
         Class<?> clazz = null;
+        // 创建实例
+        Object obj = doCreateBean(beanDefinition);
+        // 将创建好的实例 存储到早期Bean引用缓存中
+        this.earlySingletonObjects.put(beanDefinition.getId(), obj);
+        try {
+            clazz = Class.forName(beanDefinition.getClassName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        // 处理属性
+        handleProperties(beanDefinition, clazz, obj);
+        return obj;
+    }
+
+    /**
+     * 仅仅是创建实例对象，并没有赋值
+     *
+     * @param bd
+     * @return
+     * @throws BeansException
+     */
+    private Object doCreateBean(BeanDefinition bd) throws BeansException {
+        Class<?> clazz = null;
         Object obj = null;
         Constructor<?> constructor = null;
 
         try {
-            clazz = Class.forName(beanDefinition.getClassName());
+            clazz = Class.forName(bd.getClassName());
             // 处理构造器参数
-            ArgumentValues argumentValues = beanDefinition.getConstructorArgumentValues();
+            ArgumentValues argumentValues = bd.getConstructorArgumentValues();
             // 如果有参数
             if (!argumentValues.isEmpty()) {
                 Class<?>[] paramTypes = new Class<?>[argumentValues.getArgumentCount()];
@@ -134,11 +162,8 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
                 obj = clazz.newInstance();
             }
         } catch (Exception e) {
-            throw new BeansException("bean constructor invoke error,bean id is" + beanDefinition.getId());
+            throw new BeansException("bean constructor invoke error,bean id is" + bd.getId());
         }
-
-        handleProperties(beanDefinition, clazz, obj);
-
         return obj;
     }
 

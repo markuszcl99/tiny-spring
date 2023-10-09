@@ -19,6 +19,8 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
     protected List<String> beanNames = new ArrayList<>();
     /*并发安全的单例Bean操作，保证容器中的Bean唯一*/
     protected Map<String, Object> singletons = new ConcurrentHashMap<>(256);
+    /*早期Bean实例引用（实例被创建但还未被初始化），提前暴露，解决简单的循环依赖问题*/
+    protected final Map<String, Object> earlySingletonObjects = new ConcurrentHashMap(16);
 
     @Override
     public void registerSingleton(String beanName, Object singletonObject) {

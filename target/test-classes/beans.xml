@@ -7,6 +7,7 @@
     <bean id="b1" class="com.tiny.spring.test.bean.B">
         <property name="property1" value="property1"/>
         <property name="property2" value="property2"/>
+        <property type="com.tiny.spring.test.bean.A" name="a" ref="a1"/>
     </bean>
 
     <!--setter 注入-->
