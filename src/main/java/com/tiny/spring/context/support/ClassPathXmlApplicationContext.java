@@ -26,14 +26,21 @@ import java.util.Map;
  * It's my honor to share what I've learned with you!
  */
 public class ClassPathXmlApplicationContext implements BeanFactory {
-    BeanFactory beanFactory;
+    SimpleBeanFactory beanFactory;
 
     public ClassPathXmlApplicationContext(String pathname) {
+        this(pathname, true);
+    }
+
+    public ClassPathXmlApplicationContext(String pathname, boolean isRefresh) {
         Resource resource = new ClassPathXmlResource(pathname);
         SimpleBeanFactory beanFactory = new SimpleBeanFactory();
         XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
         reader.loadBeanDefinitions(resource);
         this.beanFactory = beanFactory;
+        if (isRefresh) {
+            this.beanFactory.refresh();
+        }
     }
 
     /**

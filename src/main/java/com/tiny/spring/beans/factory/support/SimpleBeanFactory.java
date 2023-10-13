@@ -28,6 +28,16 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
     public SimpleBeanFactory() {
     }
 
+    public void refresh() {
+        for (String beanName : beanDefinitionNames) {
+            try {
+                getBean(beanName);
+            } catch (BeansException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     @Override
     public Object getBean(String beanName) throws BeansException {
         // 先尝试直接拿bean实例
@@ -82,13 +92,6 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
     public void registerBeanDefinition(String name, BeanDefinition bd) {
         this.beanDefinitionMap.put(name, bd);
         this.beanDefinitionNames.add(name);
-        if (!bd.isLazyInit()) {
-            try {
-                getBean(name);
-            } catch (BeansException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     @Override
