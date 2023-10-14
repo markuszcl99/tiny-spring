@@ -27,9 +27,9 @@ public interface BeanFactory {
      */
     boolean containsBean(String beanName);
 
-    boolean isSingleton(String beanName);
+    boolean isSingleton(String beanName) throws NoSuchBeanDefinitionException;
 
-    boolean isPrototype(String beanName);
+    boolean isPrototype(String beanName) throws NoSuchBeanDefinitionException;
 
-    Class<?> getType(String beanName);
+    Class<?> getType(String beanName) throws NoSuchBeanDefinitionException;
 }
