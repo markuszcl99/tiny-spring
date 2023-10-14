@@ -1,23 +1,10 @@
 package com.tiny.spring.context.support;
 
 import com.tiny.spring.beans.BeansException;
-import com.tiny.spring.beans.factory.BeanFactory;
-import com.tiny.spring.beans.factory.config.BeanDefinition;
 import com.tiny.spring.beans.factory.support.DefaultListableBeanFactory;
-import com.tiny.spring.beans.factory.support.SimpleBeanFactory;
 import com.tiny.spring.beans.factory.xml.XmlBeanDefinitionReader;
 import com.tiny.spring.core.io.ClassPathXmlResource;
 import com.tiny.spring.core.io.Resource;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author: markus
