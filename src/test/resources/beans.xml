@@ -10,6 +10,8 @@
         <property type="com.tiny.spring.test.bean.A" name="a" ref="a1"/>
     </bean>
 
+    <bean id="c1" class="com.tiny.spring.test.bean.C"/>
+
     <!--setter 注入-->
     <bean id="a1" class="com.tiny.spring.test.bean.A">
         <property name="property1" value="property1"/>

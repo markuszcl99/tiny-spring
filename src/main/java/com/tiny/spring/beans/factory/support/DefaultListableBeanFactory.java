@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Blog: https://markuszhang.com
  * It's my honor to share what I've learned with you!
  */
-public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFactory implements BeanDefinitionRegistry {
+public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFactory implements ConfigurableListableBeanFactory, BeanDefinitionRegistry {
 
     /**
      * BeanDefinition 缓存
@@ -79,5 +79,16 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
     @Override
     public boolean containsBeanDefinition(String name) {
         return this.beanDefinitionMap.containsKey(name);
+    }
+
+    @Override
+    public void preInstantiateSingletons() throws BeansException {
+        for (String beanName : beanDefinitionNames) {
+            BeanDefinition beanDefinition = getBeanDefinition(beanName);
+            if (beanDefinition.isSingleton() && !containsBean(beanName)) {
+                // 直接getBean，所有非懒加载的单例Bean都会注册了。
+                getBean(beanName);
+            }
+        }
     }
 }
