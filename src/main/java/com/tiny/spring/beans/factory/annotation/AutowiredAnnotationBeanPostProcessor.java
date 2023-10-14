@@ -2,7 +2,7 @@ package com.tiny.spring.beans.factory.annotation;
 
 import com.tiny.spring.beans.BeansException;
 import com.tiny.spring.beans.factory.config.BeanPostProcessor;
-import com.tiny.spring.beans.factory.support.AutowireCapableBeanFactory;
+import com.tiny.spring.beans.factory.config.AutowireCapableBeanFactory;
 
 import java.lang.reflect.Field;
 

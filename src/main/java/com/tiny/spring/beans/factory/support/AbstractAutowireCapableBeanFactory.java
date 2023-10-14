@@ -2,6 +2,7 @@ package com.tiny.spring.beans.factory.support;
 
 import com.tiny.spring.beans.BeansException;
 import com.tiny.spring.beans.factory.*;
+import com.tiny.spring.beans.factory.config.AutowireCapableBeanFactory;
 import com.tiny.spring.beans.factory.config.BeanDefinition;
 import com.tiny.spring.beans.factory.config.BeanPostProcessor;
 

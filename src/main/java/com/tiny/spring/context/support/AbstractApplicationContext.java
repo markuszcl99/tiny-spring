@@ -105,7 +105,7 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
         // 我们取个巧，在这里将AutowiredAnnotationBeanPostProcessor注册进来，正常情况下它是由AnnotationConfigApplicationContext引入的。
         AutowiredAnnotationBeanPostProcessor autowiredAnnotationBeanPostProcessor = new AutowiredAnnotationBeanPostProcessor();
         autowiredAnnotationBeanPostProcessor.setBeanFactory(beanFactory);
-        beanFactory.addBeanPostProcessors(autowiredAnnotationBeanPostProcessor);
+        beanFactory.addBeanPostProcessor(autowiredAnnotationBeanPostProcessor);
     }
 
     /**

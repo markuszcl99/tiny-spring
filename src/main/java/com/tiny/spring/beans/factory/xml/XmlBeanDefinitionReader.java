@@ -1,10 +1,8 @@
 package com.tiny.spring.beans.factory.xml;
 
-import com.sun.media.sound.RIFFReader;
 import com.tiny.spring.beans.factory.*;
 import com.tiny.spring.beans.factory.config.BeanDefinition;
 import com.tiny.spring.beans.factory.support.DefaultListableBeanFactory;
-import com.tiny.spring.beans.factory.support.SimpleBeanFactory;
 import com.tiny.spring.core.io.Resource;
 import org.dom4j.Element;
 

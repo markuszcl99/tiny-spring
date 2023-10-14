@@ -1,13 +1,12 @@
 package com.tiny.spring.beans.factory.support;
 
 import com.tiny.spring.beans.BeansException;
-import com.tiny.spring.beans.factory.ArgumentValue;
-import com.tiny.spring.beans.factory.ArgumentValues;
 import com.tiny.spring.beans.factory.NoSuchBeanDefinitionException;
 import com.tiny.spring.beans.factory.config.BeanDefinition;
+import com.tiny.spring.beans.factory.config.ConfigurableListableBeanFactory;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,7 +27,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
     private final List<String> beanDefinitionNames = new ArrayList<>(256);
 
+    private final Map<Class<?>, String[]> singletonBeanNamesByType = new ConcurrentHashMap<>(64);
+
     @Override
+
     public boolean containsBean(String beanName) {
         // 实际上要复杂一些，还需要判断父容器等等，我们这里只判断容器中是否有Bean实例或者Bean定义即可
         return containsSingleton(beanName) || containsBeanDefinition(beanName);
@@ -82,6 +84,16 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
     }
 
     @Override
+    public int getBeanDefinitionCount() {
+        return this.beanDefinitionNames.size();
+    }
+
+    @Override
+    public String[] getBeanDefinitionNames() {
+        return this.beanDefinitionNames.toArray(new String[0]);
+    }
+
+    @Override
     public void preInstantiateSingletons() throws BeansException {
         for (String beanName : beanDefinitionNames) {
             BeanDefinition beanDefinition = getBeanDefinition(beanName);
@@ -90,5 +102,21 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
                 getBean(beanName);
             }
         }
+    }
+
+    @Override
+    public String[] getBeanNamesForType(Class<?> type) {
+        return this.singletonBeanNamesByType.get(type);
+    }
+
+    @Override
+    public <T> Map<String, T> getBeansOfType(Class<T> type) throws BeansException {
+        String[] beanNames = getBeanNamesForType(type);
+        Map<String, T> result = new HashMap<>(beanNames.length);
+        for (String beanName : beanNames) {
+            Object beanInstance = getBean(beanName);
+            result.put(beanName, (T) beanInstance);
+        }
+        return result;
     }
 }

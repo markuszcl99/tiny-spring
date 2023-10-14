@@ -1,4 +1,4 @@
-package com.tiny.spring.beans.factory.support;
+package com.tiny.spring.beans.factory.config;
 
 import com.tiny.spring.beans.BeansException;
 import com.tiny.spring.beans.factory.BeanFactory;

@@ -1,7 +1,7 @@
-package com.tiny.spring.beans.factory.support;
+package com.tiny.spring.beans.factory.config;
 
 import com.tiny.spring.beans.BeansException;
-import jdk.nashorn.internal.runtime.regexp.joni.Config;
+import com.tiny.spring.beans.factory.ListableBeanFactory;
 
 /**
  * @author: markus
@@ -10,10 +10,11 @@ import jdk.nashorn.internal.runtime.regexp.joni.Config;
  * @Blog: https://markuszhang.com
  * It's my honor to share what I've learned with you!
  */
-public interface ConfigurableListableBeanFactory extends ConfigurableBeanFactory {
+public interface ConfigurableListableBeanFactory extends ListableBeanFactory, AutowireCapableBeanFactory, ConfigurableBeanFactory {
 
     /**
      * 预初始化所有非懒加载的单例Bean实例
+     *
      * @throws BeansException
      */
     void preInstantiateSingletons() throws BeansException;

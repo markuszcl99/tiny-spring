@@ -1,14 +1,11 @@
 package com.tiny.spring.beans.factory.support;
 
 import com.tiny.spring.beans.BeansException;
-import com.tiny.spring.beans.factory.BeanFactory;
 import com.tiny.spring.beans.factory.config.BeanDefinition;
 import com.tiny.spring.beans.factory.config.BeanPostProcessor;
+import com.tiny.spring.beans.factory.config.ConfigurableBeanFactory;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -18,7 +15,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @Blog: https://markuszhang.com
  * It's my honor to share what I've learned with you!
  */
-public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements BeanFactory {
+public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
 
     List<BeanPostProcessor> beanPostProcessors = new CopyOnWriteArrayList<>();
 
@@ -57,8 +54,16 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         return this.beanPostProcessors;
     }
 
-    public void addBeanPostProcessors(BeanPostProcessor beanPostProcessor) {
+    @Override
+    public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
+        // 先删除一下，避免重复添加
+        this.beanPostProcessors.remove(beanPostProcessor);
         this.beanPostProcessors.add(beanPostProcessor);
+    }
+
+    @Override
+    public int getBeanPostProcessorCount() {
+        return this.beanPostProcessors.size();
     }
 
     //---------------------------------------------------------------------
