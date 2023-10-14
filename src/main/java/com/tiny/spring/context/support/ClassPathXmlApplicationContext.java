@@ -3,6 +3,7 @@ package com.tiny.spring.context.support;
 import com.tiny.spring.beans.BeansException;
 import com.tiny.spring.beans.factory.BeanFactory;
 import com.tiny.spring.beans.factory.config.BeanDefinition;
+import com.tiny.spring.beans.factory.support.DefaultListableBeanFactory;
 import com.tiny.spring.beans.factory.support.SimpleBeanFactory;
 import com.tiny.spring.beans.factory.xml.XmlBeanDefinitionReader;
 import com.tiny.spring.core.io.ClassPathXmlResource;
@@ -25,52 +26,25 @@ import java.util.Map;
  * @Blog: https://markuszhang.com
  * It's my honor to share what I've learned with you!
  */
-public class ClassPathXmlApplicationContext implements BeanFactory {
-    SimpleBeanFactory beanFactory;
+public class ClassPathXmlApplicationContext extends AbstractApplicationContext {
 
-    public ClassPathXmlApplicationContext(String pathname) {
+    private Resource resources;
+
+    public ClassPathXmlApplicationContext(String pathname) throws BeansException {
         this(pathname, true);
     }
 
-    public ClassPathXmlApplicationContext(String pathname, boolean isRefresh) {
-        Resource resource = new ClassPathXmlResource(pathname);
-        SimpleBeanFactory beanFactory = new SimpleBeanFactory();
-        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
-        reader.loadBeanDefinitions(resource);
-        this.beanFactory = beanFactory;
+    public ClassPathXmlApplicationContext(String pathname, boolean isRefresh) throws BeansException {
+        this.resources = new ClassPathXmlResource(pathname);
         if (isRefresh) {
-            this.beanFactory.refresh();
+            refresh();
         }
     }
 
-    /**
-     * 对外提供的方法，让外部程序获取Bean实例
-     *
-     * @param beanName
-     * @return
-     */
-    public Object getBean(String beanName) throws BeansException {
-        return this.beanFactory.getBean(beanName);
-    }
-
     @Override
-    public boolean containsBean(String beanName) {
-        return this.beanFactory.containsBean(beanName);
-    }
-
-    @Override
-    public boolean isSingleton(String beanName) {
-        return this.beanFactory.isSingleton(beanName);
-    }
-
-    @Override
-    public boolean isPrototype(String beanName) {
-        return this.beanFactory.isPrototype(beanName);
-    }
-
-    @Override
-    public Class<?> getType(String beanName) {
-        return this.beanFactory.getType(beanName);
+    protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) {
+        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
+        reader.loadBeanDefinitions(this.resources);
     }
 
 }

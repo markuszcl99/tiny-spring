@@ -3,6 +3,7 @@ package com.tiny.spring.beans.factory.xml;
 import com.sun.media.sound.RIFFReader;
 import com.tiny.spring.beans.factory.*;
 import com.tiny.spring.beans.factory.config.BeanDefinition;
+import com.tiny.spring.beans.factory.support.DefaultListableBeanFactory;
 import com.tiny.spring.beans.factory.support.SimpleBeanFactory;
 import com.tiny.spring.core.io.Resource;
 import org.dom4j.Element;
@@ -18,9 +19,9 @@ import java.util.List;
  * It's my honor to share what I've learned with you!
  */
 public class XmlBeanDefinitionReader {
-    SimpleBeanFactory beanFactory;
+    DefaultListableBeanFactory beanFactory;
 
-    public XmlBeanDefinitionReader(SimpleBeanFactory beanFactory) {
+    public XmlBeanDefinitionReader(DefaultListableBeanFactory beanFactory) {
         this.beanFactory = beanFactory;
     }
 
