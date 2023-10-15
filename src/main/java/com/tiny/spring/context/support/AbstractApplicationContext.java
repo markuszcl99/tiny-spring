@@ -1,9 +1,19 @@
 package com.tiny.spring.context.support;
 
+import com.sun.istack.internal.Nullable;
 import com.tiny.spring.beans.BeansException;
 import com.tiny.spring.beans.factory.NoSuchBeanDefinitionException;
 import com.tiny.spring.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import com.tiny.spring.beans.factory.support.DefaultListableBeanFactory;
+import com.tiny.spring.context.ApplicationEvent;
+import com.tiny.spring.context.ApplicationListener;
+import com.tiny.spring.context.ConfigurableApplicationContext;
+import com.tiny.spring.context.event.ApplicationEventMulticaster;
+import com.tiny.spring.context.event.ContextRefreshedEvent;
+import com.tiny.spring.context.event.SimpleApplicationEventMulticaster;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * @author: markus
@@ -12,10 +22,14 @@ import com.tiny.spring.beans.factory.support.DefaultListableBeanFactory;
  * @Blog: https://markuszhang.com
  * It's my honor to share what I've learned with you!
  */
-public abstract class AbstractApplicationContext implements ApplicationContext {
+public abstract class AbstractApplicationContext implements ConfigurableApplicationContext {
 
     private DefaultListableBeanFactory beanFactory;
     private final Object startupShutdownMonitor;
+
+    private final Set<ApplicationListener> applicationListeners = new LinkedHashSet<>();
+    @Nullable
+    private ApplicationEventMulticaster applicationEventMulticaster;
 
     public AbstractApplicationContext() {
         this.startupShutdownMonitor = new Object();
@@ -62,15 +76,36 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
                 // 注册BeanPostProcessor
                 registerBeanPostProcessors(beanFactory);
                 // 其他的还不涉及，我也先不写了。后续涉及到再实现
-
+                // 初始化事件广播器
+                initApplicationEventMulticaster();
+                // 刷新其他指定的Bean，交给子类去实现
+                onRefresh();
+                // Check for listener beans and register them.
+                registerListeners();
                 // 初始化所有非懒加载的单例Bean
                 finishBeanFactoryInitialization(beanFactory);
+                // 容器启动的最后一步，发布容器刷新完成事件
+                finishRefresh();
             } catch (BeansException ex) {
                 // 将异常传播给调用者
                 throw ex;
             }
 
         }
+    }
+
+    protected void finishRefresh() {
+        publishEvent(new ContextRefreshedEvent(this));
+    }
+
+    protected void onRefresh() {
+        // spring默认空实现，交给子类去处理
+
+    }
+
+    protected void registerListeners() {
+        // 这里进行事件监听器的注册，用户可进行Bean配置，然后注册。
+        // todo 待我们完成容器支持泛型的动作再实现这里
     }
 
     private void finishBeanFactoryInitialization(DefaultListableBeanFactory beanFactory) throws BeansException {
@@ -106,6 +141,42 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
         AutowiredAnnotationBeanPostProcessor autowiredAnnotationBeanPostProcessor = new AutowiredAnnotationBeanPostProcessor();
         autowiredAnnotationBeanPostProcessor.setBeanFactory(beanFactory);
         beanFactory.addBeanPostProcessor(autowiredAnnotationBeanPostProcessor);
+    }
+
+    protected void initApplicationEventMulticaster() {
+        // spring 源码中会先去获取BeanFactory中由应用层人员配置的multicaster，我们这里就省略了，直接初始化一个
+        this.applicationEventMulticaster = new SimpleApplicationEventMulticaster();
+
+        // 注册静态添加的事件监听器
+        for (ApplicationListener applicationListener : this.applicationListeners) {
+            getApplicationEventMulticaster().addApplicationListener(applicationListener);
+        }
+    }
+
+    ApplicationEventMulticaster getApplicationEventMulticaster() throws IllegalStateException {
+        if (this.applicationEventMulticaster == null) {
+            throw new IllegalStateException("ApplicationEventMulticaster not initialized - " +
+                    "call 'refresh' before multicasting events via the context: " + this);
+        }
+        return this.applicationEventMulticaster;
+    }
+
+    @Override
+    public void publishEvent(Object event) {
+        // spring源码要复杂一些，我们这里只进行一些简单的广播动作
+        if (event instanceof ApplicationEvent) {
+            ApplicationEvent applicationEvent = (ApplicationEvent) event;
+            // 获取广播器并将事件广播出去
+            getApplicationEventMulticaster().multicastEvent(applicationEvent);
+        }
+    }
+
+    @Override
+    public void addApplicationListener(ApplicationListener<?> applicationListener) {
+        if (applicationEventMulticaster != null) {
+            applicationEventMulticaster.addApplicationListener(applicationListener);
+        }
+        this.applicationListeners.add(applicationListener);
     }
 
     /**

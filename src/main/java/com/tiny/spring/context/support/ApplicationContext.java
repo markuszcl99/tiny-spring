@@ -1,6 +1,7 @@
 package com.tiny.spring.context.support;
 
 import com.tiny.spring.beans.factory.BeanFactory;
+import com.tiny.spring.context.ApplicationEventPublisher;
 
 /**
  * @author: markus
@@ -9,5 +10,5 @@ import com.tiny.spring.beans.factory.BeanFactory;
  * @Blog: https://markuszhang.com
  * It's my honor to share what I've learned with you!
  */
-public interface ApplicationContext extends BeanFactory {
+public interface ApplicationContext extends BeanFactory, ApplicationEventPublisher {
 }
