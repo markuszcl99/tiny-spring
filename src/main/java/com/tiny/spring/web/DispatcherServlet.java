@@ -8,13 +8,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author: markus
@@ -25,10 +27,35 @@ import java.util.Map;
  */
 public class DispatcherServlet extends HttpServlet {
 
-    private String sContextConfigLocation;
-    private Map<String, MappingValue> mappingValues;
-    private Map<String, Class<?>> mappingClazz = new HashMap<>();
+    /**
+     * 用于存储需要扫描的package列表
+     */
+    private List<String> packageNames = new ArrayList<>();
+    /**
+     * 用于存储controller的名称与对象的映射关系
+     */
+    private Map<String, Object> controllerObjects = new HashMap<>();
+    /**
+     * 用于存储controller名称数组列表
+     */
+    private List<String> controllerNames = new ArrayList<>();
+    /**
+     * 用于存储controller 名称与类的映射关系
+     */
+    private Map<String, Class<?>> controllerClasses = new HashMap<>();
+    /**
+     * 保存自定义的@RequestMapping名称（URL的名称）的列表
+     */
+    private Set<String> urlMappingNames = new HashSet<>();
+    /**
+     * 保存URL名称与对象的映射关系
+     */
     private Map<String, Object> mappingObjects = new HashMap<>();
+    /**
+     * 保存URL名称与方法的映射关系
+     */
+    private Map<String, Method> mappingMethods = new HashMap<>();
+    private String sContextConfigLocation;
 
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
@@ -40,9 +67,7 @@ public class DispatcherServlet extends HttpServlet {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        Resource resource = new ClassPathXmlResource(xmlPath);
-        XmlConfigReader reader = new XmlConfigReader();
-        mappingValues = reader.loadConfig(resource);
+        this.packageNames = XmlScanComponentHelper.getNodeValue(xmlPath);
         Refresh();
     }
 
@@ -50,38 +75,70 @@ public class DispatcherServlet extends HttpServlet {
      * 读取mappingValues中的Bean定义
      */
     protected void Refresh() {
-        for (Map.Entry<String, MappingValue> entry : mappingValues.entrySet()) {
-            String id = entry.getKey();
-            String className = entry.getValue().getClazz();
+        initController();
+        initMapping();
+    }
+
+    /**
+     * 对扫描的每一个类进行加载和实例化
+     */
+    protected void initController() {
+        //扫描包，获取所有类名
+        this.controllerNames = scanPackages(this.packageNames);
+        for (String controllerName : this.controllerNames) {
             Object obj = null;
-            Class<?> clazz = null;
+            Class<?> clz = null;
             try {
-                clazz = Class.forName(className);
-                obj = clazz.newInstance();
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                clz = Class.forName(controllerName); //加载类
+                this.controllerClasses.put(controllerName, clz);
+            } catch (Exception e) {
+            }
+            try {
+                obj = clz.newInstance(); //实例化bean
+                this.controllerObjects.put(controllerName, obj);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-            mappingClazz.put(id, clazz);
-            mappingObjects.put(id, obj);
+        }
+
+    }
+
+    /**
+     * 初始化URL映射
+     */
+    private void initMapping() {
+        for (String controllerName : this.controllerNames) {
+            Class<?> clazz = this.controllerClasses.get(controllerName);
+            Object controllerObject = this.controllerObjects.get(controllerName);
+            Method[] methods = clazz.getMethods();
+            for (Method method : methods) {
+                boolean isRequestMapping = method.isAnnotationPresent(RequestMapping.class);
+                if (isRequestMapping) {
+                    String methodName = method.getName();
+                    // 建立方法名和URL的映射
+                    String urlMapping = method.getAnnotation(RequestMapping.class).value();
+                    this.urlMappingNames.add(urlMapping);
+                    this.mappingObjects.put(urlMapping, controllerObject);
+                    this.mappingMethods.put(urlMapping, method);
+                }
+            }
         }
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // 获取请求的path
         String sPath = request.getServletPath();
-        // 如果mappingValue中没有定义这样的路径，则直接返回，不处理
-        if (this.mappingValues.get(sPath) == null) {
+        if (!urlMappingNames.contains(sPath)) {
             return;
         }
 
-        Class<?> clazz = this.mappingClazz.get(sPath);
         Object obj = this.mappingObjects.get(sPath);
-        String methodName = this.mappingValues.get(sPath).getMethod();
         Object invokeResult = null;
+
         try {
-            Method method = clazz.getMethod(methodName);
+            Method method = this.mappingMethods.get(sPath);
             invokeResult = method.invoke(obj);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
         if (invokeResult != null) {
@@ -92,4 +149,32 @@ public class DispatcherServlet extends HttpServlet {
         }
     }
 
+    private List<String> scanPackages(List<String> packageNames) {
+        List<String> tempControllerNames = new ArrayList<>();
+        for (String packageName : packageNames) {
+            tempControllerNames.addAll(scanPackage(packageName));
+        }
+        return tempControllerNames;
+    }
+
+    private List<String> scanPackage(String packageName) {
+        List<String> tempControllerNames = new ArrayList<>();
+        URI uri = null;
+        try {
+            uri = this.getClass().getResource("/" + packageName.replaceAll("\\.", "/")).toURI();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        File dir = new File(uri);
+        for (File file : dir.listFiles()) {
+            if (file.isDirectory()) {
+                scanPackage(packageName + "." + file.getName());
+            } else {
+                String controllerName = packageName + "." + file.getName().replace(".class", "");
+                tempControllerNames.add(controllerName);
+            }
+        }
+        return tempControllerNames;
+    }
 }
+

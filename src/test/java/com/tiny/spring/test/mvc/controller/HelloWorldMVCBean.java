@@ -1,4 +1,6 @@
-package com.tiny.spring.test.mvc;
+package com.tiny.spring.test.mvc.controller;
+
+import com.tiny.spring.web.RequestMapping;
 
 /**
  * @author: markus
@@ -15,5 +17,10 @@ public class HelloWorldMVCBean {
 
     public String doPost() {
         return "hello world!";
+    }
+
+    @RequestMapping("/test")
+    public String doTest() {
+        return "Hello world! @RequestMapping feature test success!";
     }
 }
