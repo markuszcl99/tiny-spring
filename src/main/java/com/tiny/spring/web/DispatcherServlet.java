@@ -2,6 +2,7 @@ package com.tiny.spring.web;
 
 import com.tiny.spring.core.io.ClassPathXmlResource;
 import com.tiny.spring.core.io.Resource;
+import com.tiny.spring.web.context.WebApplicationContext;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -57,8 +58,11 @@ public class DispatcherServlet extends HttpServlet {
     private Map<String, Method> mappingMethods = new HashMap<>();
     private String sContextConfigLocation;
 
+    private WebApplicationContext webApplicationContext;
+
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
+        this.webApplicationContext = (WebApplicationContext) this.getServletContext().getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
 
         sContextConfigLocation = config.getInitParameter("contextConfigLocation");
         URL xmlPath = null;

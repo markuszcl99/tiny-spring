@@ -3,6 +3,19 @@
          xmlns:web="http://xmlns.jcp.org/xml/ns/javaee"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
 http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID">
+
+    <!--声明全局的初始化参数-->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>applicationContext.xml</param-value>
+    </context-param>
+    <!--声明监听器，它在建立、修改和删除会话或servlet环境时得到事件通知-->
+    <listener>
+        <listener-class>
+            com.tiny.spring.web.ContextLoaderListener
+        </listener-class>
+    </listener>
+    <!--声明servlet类-->
     <servlet>
         <servlet-name>tiny-mvc</servlet-name>
         <servlet-class>com.tiny.spring.web.DispatcherServlet</servlet-class>
@@ -12,6 +25,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID">
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    <!--声明servlet访问路径-->
     <servlet-mapping>
         <servlet-name>tiny-mvc</servlet-name>
         <url-pattern>/</url-pattern>
