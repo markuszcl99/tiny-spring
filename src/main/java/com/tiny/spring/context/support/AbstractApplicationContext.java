@@ -31,6 +31,9 @@ public abstract class AbstractApplicationContext implements ConfigurableApplicat
     @Nullable
     private ApplicationEventMulticaster applicationEventMulticaster;
 
+    @Nullable
+    private ApplicationContext parent;
+
     public AbstractApplicationContext() {
         this.startupShutdownMonitor = new Object();
     }
@@ -177,6 +180,16 @@ public abstract class AbstractApplicationContext implements ConfigurableApplicat
             applicationEventMulticaster.addApplicationListener(applicationListener);
         }
         this.applicationListeners.add(applicationListener);
+    }
+
+    @Override
+    public void setParent(ApplicationContext parent) {
+        this.parent = parent;
+    }
+
+    @Override
+    public ApplicationContext getParent() {
+        return this.parent;
     }
 
     /**

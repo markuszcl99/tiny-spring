@@ -12,4 +12,6 @@ import com.tiny.spring.context.support.ApplicationContext;
 public interface ConfigurableApplicationContext extends ApplicationContext {
 
     void addApplicationListener(ApplicationListener<?> applicationListener);
+
+    void setParent(ApplicationContext parent);
 }

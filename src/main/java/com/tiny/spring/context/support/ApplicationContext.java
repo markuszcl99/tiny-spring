@@ -11,4 +11,10 @@ import com.tiny.spring.context.ApplicationEventPublisher;
  * It's my honor to share what I've learned with you!
  */
 public interface ApplicationContext extends BeanFactory, ApplicationEventPublisher {
+
+    /**
+     * 获取父容器
+     * @return
+     */
+    ApplicationContext getParent();
 }
