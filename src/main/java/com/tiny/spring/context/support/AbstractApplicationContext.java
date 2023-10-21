@@ -121,9 +121,9 @@ public abstract class AbstractApplicationContext implements ConfigurableApplicat
 
     protected DefaultListableBeanFactory obtainFreshBeanFactory() {
         DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+        this.beanFactory = beanFactory;
         // 扫描BeanDefinition定义
         this.loadBeanDefinitions(beanFactory);
-        this.beanFactory = beanFactory;
         return beanFactory;
     }
 
@@ -190,6 +190,10 @@ public abstract class AbstractApplicationContext implements ConfigurableApplicat
     @Override
     public ApplicationContext getParent() {
         return this.parent;
+    }
+
+    public DefaultListableBeanFactory getBeanFactory() {
+        return beanFactory;
     }
 
     /**

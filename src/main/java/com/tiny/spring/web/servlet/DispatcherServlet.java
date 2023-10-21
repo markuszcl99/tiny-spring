@@ -1,12 +1,11 @@
-package com.tiny.spring.web;
+package com.tiny.spring.web.servlet;
 
-import com.tiny.spring.core.io.ClassPathXmlResource;
-import com.tiny.spring.core.io.Resource;
+import com.tiny.spring.web.RequestMapping;
+import com.tiny.spring.web.XmlScanComponentHelper;
 import com.tiny.spring.web.context.WebApplicationContext;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -26,7 +25,7 @@ import java.util.*;
  * @Blog: https://markuszhang.com
  * It's my honor to share what I've learned with you!
  */
-public class DispatcherServlet extends HttpServlet {
+public class DispatcherServlet extends FrameworkServlet {
 
     /**
      * 用于存储需要扫描的package列表
@@ -56,22 +55,9 @@ public class DispatcherServlet extends HttpServlet {
      * 保存URL名称与方法的映射关系
      */
     private Map<String, Method> mappingMethods = new HashMap<>();
-    private String sContextConfigLocation;
-
-    private WebApplicationContext webApplicationContext;
 
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        this.webApplicationContext = (WebApplicationContext) this.getServletContext().getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
-
-        sContextConfigLocation = config.getInitParameter("contextConfigLocation");
-        URL xmlPath = null;
-        try {
-            xmlPath = this.getServletContext().getResource(sContextConfigLocation);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        this.packageNames = XmlScanComponentHelper.getNodeValue(xmlPath);
         Refresh();
     }
 
@@ -79,32 +65,7 @@ public class DispatcherServlet extends HttpServlet {
      * 读取mappingValues中的Bean定义
      */
     protected void Refresh() {
-        initController();
         initMapping();
-    }
-
-    /**
-     * 对扫描的每一个类进行加载和实例化
-     */
-    protected void initController() {
-        //扫描包，获取所有类名
-        this.controllerNames = scanPackages(this.packageNames);
-        for (String controllerName : this.controllerNames) {
-            Object obj = null;
-            Class<?> clz = null;
-            try {
-                clz = Class.forName(controllerName); //加载类
-                this.controllerClasses.put(controllerName, clz);
-            } catch (Exception e) {
-            }
-            try {
-                obj = clz.newInstance(); //实例化bean
-                this.controllerObjects.put(controllerName, obj);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
     }
 
     /**
@@ -153,32 +114,5 @@ public class DispatcherServlet extends HttpServlet {
         }
     }
 
-    private List<String> scanPackages(List<String> packageNames) {
-        List<String> tempControllerNames = new ArrayList<>();
-        for (String packageName : packageNames) {
-            tempControllerNames.addAll(scanPackage(packageName));
-        }
-        return tempControllerNames;
-    }
-
-    private List<String> scanPackage(String packageName) {
-        List<String> tempControllerNames = new ArrayList<>();
-        URI uri = null;
-        try {
-            uri = this.getClass().getResource("/" + packageName.replaceAll("\\.", "/")).toURI();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        File dir = new File(uri);
-        for (File file : dir.listFiles()) {
-            if (file.isDirectory()) {
-                scanPackage(packageName + "." + file.getName());
-            } else {
-                String controllerName = packageName + "." + file.getName().replace(".class", "");
-                tempControllerNames.add(controllerName);
-            }
-        }
-        return tempControllerNames;
-    }
 }
 

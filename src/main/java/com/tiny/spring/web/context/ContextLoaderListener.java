@@ -1,6 +1,5 @@
-package com.tiny.spring.web;
+package com.tiny.spring.web.context;
 
-import com.tiny.spring.web.context.AnnotationConfigWebApplicationContext;
 import com.tiny.spring.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContext;
@@ -39,10 +38,18 @@ public class ContextLoaderListener implements ServletContextListener {
     }
 
     private void initWebApplicationContext(ServletContext servletContext) {
+        // 先创建IoC容器
         String sContextLocation = servletContext.getInitParameter(CONFIG_LOCATION_PARAM);
-        WebApplicationContext wac = new AnnotationConfigWebApplicationContext(sContextLocation);
+        // 先启动Listener中的webApplicationContext的上下文，将IoC中的Bean先给注册上
+        WebApplicationContext wac = new XmlWebApplicationContext(sContextLocation);
         wac.setServletContext(servletContext);
         this.context = wac;
         servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
+        configureAndRefreshWebApplicationContext((ConfigurableWebApplicationContext) wac);
+    }
+
+    private void configureAndRefreshWebApplicationContext(ConfigurableWebApplicationContext wac) {
+        // 直接启动上下文
+        wac.refresh();
     }
 }

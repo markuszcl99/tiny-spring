@@ -1,5 +1,7 @@
 package com.tiny.spring.context;
 
+import com.tiny.spring.beans.BeansException;
+import com.tiny.spring.beans.factory.config.ConfigurableBeanFactory;
 import com.tiny.spring.context.support.ApplicationContext;
 
 /**
@@ -14,4 +16,6 @@ public interface ConfigurableApplicationContext extends ApplicationContext {
     void addApplicationListener(ApplicationListener<?> applicationListener);
 
     void setParent(ApplicationContext parent);
+
+    void refresh() throws BeansException, IllegalStateException;
 }

@@ -3,6 +3,6 @@
 <!--<beans>-->
 <!--    <bean id="/helloworld" class="com.tiny.spring.test.mvc.controller.HelloWorldMVCBean" value="doGet"/>-->
 <!--</beans>-->
-<components>
+<component>
     <component-scan base-package="com.tiny.spring.test.mvc.controller"/>
-</components>
+</component>

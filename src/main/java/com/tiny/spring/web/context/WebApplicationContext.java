@@ -13,7 +13,8 @@ import javax.servlet.ServletContext;
  * It's my honor to share what I've learned with you!
  */
 public interface WebApplicationContext extends ApplicationContext {
-    String ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE = WebApplicationContext.class.getName();
+
+    String ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE = WebApplicationContext.class.getName() + ".ROOT";
 
     ServletContext getServletContext();
 
