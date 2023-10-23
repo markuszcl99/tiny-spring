@@ -19,6 +19,7 @@ import java.util.List;
 public class XmlBeanDefinitionReader {
     DefaultListableBeanFactory beanFactory;
 
+
     public XmlBeanDefinitionReader(DefaultListableBeanFactory beanFactory) {
         this.beanFactory = beanFactory;
     }

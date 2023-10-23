@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!--省去手动配置，引入自动配置机制-->
-<!--<beans>-->
-<!--    <bean id="/helloworld" class="com.tiny.spring.test.mvc.controller.HelloWorldMVCBean" value="doGet"/>-->
-<!--</beans>-->
-<component>
-    <component-scan base-package="com.tiny.spring.test.mvc.controller"/>
-</component>
+<beans>
+    <bean id="/helloworld" class="com.tiny.spring.test.mvc.controller.HelloWorldMVCBean"/>
+</beans>
