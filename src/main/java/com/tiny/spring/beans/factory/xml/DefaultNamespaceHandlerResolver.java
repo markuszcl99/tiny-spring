@@ -23,7 +23,6 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 
     @Override
     public NamespaceHandler resolve(String namespaceUri) {
-        // todo 待实现
-        return null;
+        return (NamespaceHandler) handlerMappings.get(namespaceUri);
     }
 }
