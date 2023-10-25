@@ -27,7 +27,7 @@ public class XmlBeanDefinitionReader {
 
     public XmlBeanDefinitionReader(DefaultListableBeanFactory beanFactory) {
         this.beanFactory = beanFactory;
-        this.delegate = new BeanDefinitionParserDelegate();
+        this.delegate = new BeanDefinitionParserDelegate(new XmlReaderContext(this, new DefaultNamespaceHandlerResolver()));
     }
 
     public void loadBeanDefinitions(Resource resource) {
@@ -35,6 +35,8 @@ public class XmlBeanDefinitionReader {
             Element element = (Element) resource.next();
             if (delegate.isDefaultNamespace(element)) {
                 parseDefaultElement(element, delegate);
+            } else {
+                delegate.parseCustomElement(element);
             }
         }
     }
@@ -48,5 +50,13 @@ public class XmlBeanDefinitionReader {
     private void processBeanDefinition(Element element, BeanDefinitionParserDelegate delegate) {
         BeanDefinition beanDefinition = delegate.parseBeanDefinitionElement(element);
         this.beanFactory.registerBeanDefinition(beanDefinition.getId(), beanDefinition);
+    }
+
+    public DefaultListableBeanFactory getBeanFactory() {
+        return beanFactory;
+    }
+
+    public BeanDefinitionParserDelegate getDelegate() {
+        return delegate;
     }
 }

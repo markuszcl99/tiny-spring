@@ -26,6 +26,12 @@ public class BeanDefinitionParserDelegate {
 
     public static final String BEANS_NAMESPACE_URI = "http://www.springframework.org/schema/beans";
 
+    private final XmlReaderContext readerContext;
+
+    public BeanDefinitionParserDelegate(XmlReaderContext readerContext) {
+        this.readerContext = readerContext;
+    }
+
     public boolean isDefaultNamespace(Element element) {
         return isDefaultNamespace(getNamespaceURI(element));
     }
@@ -93,4 +99,15 @@ public class BeanDefinitionParserDelegate {
         return desiredName.equals(element.getName());
     }
 
+    public BeanDefinition parseCustomElement(Element element) {
+        // 获取标签的命名空间uri
+        String namespaceUri = element.getNamespaceURI();
+        if (namespaceUri == null) {
+            return null;
+        }
+
+        // 根据uri获取具体的NamespaceHandler
+        NamespaceHandler namespaceHandler = this.readerContext.getNamespaceHandlerResolver().resolve(namespaceUri);
+        return namespaceHandler.parse(element, new ParserContext(this.readerContext));
+    }
 }

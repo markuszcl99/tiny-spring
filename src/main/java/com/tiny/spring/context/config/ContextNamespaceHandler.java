@@ -1,6 +1,7 @@
 package com.tiny.spring.context.config;
 
 import com.tiny.spring.beans.factory.xml.NamespaceHandlerSupport;
+import com.tiny.spring.context.annotation.ComponentScanBeanDefinitionParser;
 
 /**
  * @author: markus
@@ -12,6 +13,7 @@ import com.tiny.spring.beans.factory.xml.NamespaceHandlerSupport;
 public class ContextNamespaceHandler extends NamespaceHandlerSupport {
     @Override
     public void init() {
-
+        // 包扫描路径解析器注册
+        registerBeanDefinitionParser("component-scan", new ComponentScanBeanDefinitionParser());
     }
 }

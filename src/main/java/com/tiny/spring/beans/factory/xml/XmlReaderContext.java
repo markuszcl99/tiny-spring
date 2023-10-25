@@ -15,4 +15,12 @@ public class XmlReaderContext {
         this.reader = reader;
         this.namespaceHandlerResolver = namespaceHandlerResolver;
     }
+
+    public XmlBeanDefinitionReader getReader() {
+        return reader;
+    }
+
+    public NamespaceHandlerResolver getNamespaceHandlerResolver() {
+        return namespaceHandlerResolver;
+    }
 }

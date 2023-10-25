@@ -8,4 +8,13 @@ package com.tiny.spring.beans.factory.xml;
  * It's my honor to share what I've learned with you!
  */
 public final class ParserContext {
+    private final XmlReaderContext readerContext;
+
+    public ParserContext(XmlReaderContext readerContext) {
+        this.readerContext = readerContext;
+    }
+
+    public XmlReaderContext getReaderContext() {
+        return readerContext;
+    }
 }
