@@ -1,5 +1,6 @@
 package com.tiny.spring.web.servlet;
 
+import com.tiny.spring.context.support.ApplicationContext;
 import com.tiny.spring.web.RequestMapping;
 import com.tiny.spring.web.XmlScanComponentHelper;
 import com.tiny.spring.web.context.WebApplicationContext;
@@ -58,14 +59,23 @@ public class DispatcherServlet extends FrameworkServlet {
 
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        Refresh();
     }
 
     /**
      * 读取mappingValues中的Bean定义
      */
     protected void Refresh() {
-        initMapping();
+//        initMapping();
+
+    }
+
+    @Override
+    protected void onRefresh(ApplicationContext context) {
+        initHandlerMapping(context);
+    }
+
+    private void initHandlerMapping(ApplicationContext context) {
+
     }
 
     /**

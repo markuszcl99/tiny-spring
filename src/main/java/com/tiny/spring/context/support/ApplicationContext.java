@@ -1,6 +1,7 @@
 package com.tiny.spring.context.support;
 
 import com.tiny.spring.beans.factory.BeanFactory;
+import com.tiny.spring.beans.factory.ListableBeanFactory;
 import com.tiny.spring.context.ApplicationEventPublisher;
 
 /**
@@ -10,11 +11,13 @@ import com.tiny.spring.context.ApplicationEventPublisher;
  * @Blog: https://markuszhang.com
  * It's my honor to share what I've learned with you!
  */
-public interface ApplicationContext extends BeanFactory, ApplicationEventPublisher {
+public interface ApplicationContext extends ListableBeanFactory, ApplicationEventPublisher {
 
     /**
      * 获取父容器
+     *
      * @return
      */
     ApplicationContext getParent();
+
 }

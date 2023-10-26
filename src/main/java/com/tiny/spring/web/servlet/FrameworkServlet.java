@@ -1,6 +1,7 @@
 package com.tiny.spring.web.servlet;
 
 import com.sun.istack.internal.Nullable;
+import com.tiny.spring.context.support.ApplicationContext;
 import com.tiny.spring.web.context.ConfigurableWebApplicationContext;
 import com.tiny.spring.web.context.WebApplicationContext;
 import com.tiny.spring.web.context.XmlWebApplicationContext;
@@ -50,7 +51,12 @@ public class FrameworkServlet extends HttpServletBean {
 
         // 我们默认这个WebApplicationContext就是null，直接创建
         wac = createWebApplicationContext(rootApplicationContext);
+        onRefresh(wac);
         return wac;
+    }
+
+    protected void onRefresh(ApplicationContext context) {
+
     }
 
     private WebApplicationContext createWebApplicationContext(@Nullable WebApplicationContext rootApplicationContext) {
