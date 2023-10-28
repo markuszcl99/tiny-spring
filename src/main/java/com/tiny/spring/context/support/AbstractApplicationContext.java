@@ -4,6 +4,7 @@ import com.sun.istack.internal.Nullable;
 import com.tiny.spring.beans.BeansException;
 import com.tiny.spring.beans.factory.NoSuchBeanDefinitionException;
 import com.tiny.spring.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
+import com.tiny.spring.beans.factory.config.AutowireCapableBeanFactory;
 import com.tiny.spring.beans.factory.support.DefaultListableBeanFactory;
 import com.tiny.spring.context.ApplicationEvent;
 import com.tiny.spring.context.ApplicationListener;
@@ -13,6 +14,7 @@ import com.tiny.spring.context.event.ContextRefreshedEvent;
 import com.tiny.spring.context.event.SimpleApplicationEventMulticaster;
 
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -62,6 +64,7 @@ public abstract class AbstractApplicationContext implements ConfigurableApplicat
     public Class<?> getType(String beanName) throws NoSuchBeanDefinitionException {
         return this.beanFactory.getType(beanName);
     }
+
 
     public void refresh() throws BeansException, IllegalStateException {
         synchronized (this.startupShutdownMonitor) {
@@ -192,6 +195,11 @@ public abstract class AbstractApplicationContext implements ConfigurableApplicat
         return this.parent;
     }
 
+    @Override
+    public AutowireCapableBeanFactory getAutowireCapableBeanFactory() {
+        return this.beanFactory;
+    }
+
     public DefaultListableBeanFactory getBeanFactory() {
         return beanFactory;
     }
@@ -202,4 +210,14 @@ public abstract class AbstractApplicationContext implements ConfigurableApplicat
      * @param beanFactory
      */
     protected abstract void loadBeanDefinitions(DefaultListableBeanFactory beanFactory);
+
+    @Override
+    public String[] getBeanNamesForType(Class<?> type) {
+        return this.beanFactory.getBeanNamesForType(type);
+    }
+
+    @Override
+    public <T> Map<String, T> getBeansOfType(Class<T> type) throws BeansException {
+        return this.beanFactory.getBeansOfType(type);
+    }
 }

@@ -4,6 +4,7 @@ import com.sun.istack.internal.Nullable;
 import com.tiny.spring.util.ClassUtils;
 import com.tiny.spring.util.ResourceUtils;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -42,6 +43,16 @@ public abstract class PropertiesLoaderUtils {
             } finally {
                 is.close();
             }
+        }
+        return properties;
+    }
+
+    public static Properties loadProperties(String filePath) {
+        Properties properties = new Properties();
+        try (FileInputStream fis = new FileInputStream(filePath)) {
+            properties.load(fis);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return properties;
     }

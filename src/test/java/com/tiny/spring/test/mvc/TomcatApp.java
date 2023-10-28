@@ -15,11 +15,16 @@ import java.io.File;
  * It's my honor to share what I've learned with you!
  */
 public class TomcatApp {
-    public static void main( String[] args ) throws LifecycleException {
-        System.out.println( "Hello World!" );
+    public static void main(String[] args) throws LifecycleException {
+        System.out.println("Hello World!");
+
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        String classPath = classLoader.getResource("").getPath();
+        System.out.println("classpath is [" + classPath + "]");
+
         Tomcat tomcat = new Tomcat();
-        String webappDirLocation = "WebContent";
-        StandardContext context = (StandardContext) tomcat.addWebapp("/", new File(webappDirLocation).getAbsolutePath());
+        String webappDirLocation = "webapp";
+        StandardContext context = (StandardContext) tomcat.addWebapp(classPath, new File(classPath + webappDirLocation).getAbsolutePath());
         Connector connector = new Connector();
         connector.setPort(8080);
         tomcat.setConnector(connector);

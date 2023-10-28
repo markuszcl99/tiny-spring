@@ -2,6 +2,7 @@ package com.tiny.spring.context.support;
 
 import com.tiny.spring.beans.factory.BeanFactory;
 import com.tiny.spring.beans.factory.ListableBeanFactory;
+import com.tiny.spring.beans.factory.config.AutowireCapableBeanFactory;
 import com.tiny.spring.context.ApplicationEventPublisher;
 
 /**
@@ -19,5 +20,8 @@ public interface ApplicationContext extends ListableBeanFactory, ApplicationEven
      * @return
      */
     ApplicationContext getParent();
+
+
+    AutowireCapableBeanFactory getAutowireCapableBeanFactory();
 
 }

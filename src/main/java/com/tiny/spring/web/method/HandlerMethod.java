@@ -1,5 +1,7 @@
 package com.tiny.spring.web.method;
 
+import com.tiny.spring.core.MethodParameter;
+
 import java.lang.reflect.Method;
 
 /**
@@ -11,11 +13,33 @@ import java.lang.reflect.Method;
  */
 public class HandlerMethod {
 
-    private final Object bean;
-    private final Method method;
+    private Object bean;
+    private Method method;
+    private Class<?> beanType;
+    private MethodParameter[] parameters;
+    private Class<?> returnType;
+    private String description;
+    private String className;
+    private String methodName;
 
     public HandlerMethod(Object bean, Method method) {
+        this.setBean(bean);
+        this.setMethod(method);
+    }
+
+    public void setBean(Object bean) {
         this.bean = bean;
+    }
+
+    public void setMethod(Method method) {
         this.method = method;
+    }
+
+    public Object getBean() {
+        return bean;
+    }
+
+    public Method getMethod() {
+        return method;
     }
 }

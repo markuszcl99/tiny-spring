@@ -182,4 +182,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         }
         return result;
     }
+
+    @Override
+    public <T> T createBean(Class<T> clazz) {
+        BeanDefinition beanDefinition = new BeanDefinition();
+        beanDefinition.setBeanClass(clazz);
+        beanDefinition.setId(clazz.getName());
+        beanDefinition.setClassName(clazz.getName());
+        return (T) createBean(clazz.getName(), beanDefinition);
+    }
 }

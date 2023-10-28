@@ -1,21 +1,14 @@
 package com.tiny.spring.web.servlet;
 
 import com.tiny.spring.context.support.ApplicationContext;
-import com.tiny.spring.web.RequestMapping;
-import com.tiny.spring.web.XmlScanComponentHelper;
-import com.tiny.spring.web.context.WebApplicationContext;
+import com.tiny.spring.core.io.support.PropertiesLoaderUtils;
+import com.tiny.spring.util.ClassUtils;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 
@@ -28,34 +21,17 @@ import java.util.*;
  */
 public class DispatcherServlet extends FrameworkServlet {
 
+    private static final Properties defaultStrategies;
+
+    static {
+        String path = DispatcherServlet.class.getClassLoader().getResource("DispatcherServlet.properties").getPath();
+        defaultStrategies = PropertiesLoaderUtils.loadProperties(path);
+    }
+
     /**
-     * 用于存储需要扫描的package列表
+     * 处理url到controller的映射的组件
      */
-    private List<String> packageNames = new ArrayList<>();
-    /**
-     * 用于存储controller的名称与对象的映射关系
-     */
-    private Map<String, Object> controllerObjects = new HashMap<>();
-    /**
-     * 用于存储controller名称数组列表
-     */
-    private List<String> controllerNames = new ArrayList<>();
-    /**
-     * 用于存储controller 名称与类的映射关系
-     */
-    private Map<String, Class<?>> controllerClasses = new HashMap<>();
-    /**
-     * 保存自定义的@RequestMapping名称（URL的名称）的列表
-     */
-    private Set<String> urlMappingNames = new HashSet<>();
-    /**
-     * 保存URL名称与对象的映射关系
-     */
-    private Map<String, Object> mappingObjects = new HashMap<>();
-    /**
-     * 保存URL名称与方法的映射关系
-     */
-    private Map<String, Method> mappingMethods = new HashMap<>();
+    private List<HandlerMapping> handlerMappings = new ArrayList<>();
 
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
@@ -75,53 +51,45 @@ public class DispatcherServlet extends FrameworkServlet {
     }
 
     private void initHandlerMapping(ApplicationContext context) {
-
+        this.handlerMappings = null;
+        // spring源码是这样做：首先会在spring容器中查找HandlerMapping，如果找不到则会去DispatcherServlet.properties中加载默认配置
+        // 1. 先去容器找一下是否有配置
+        Map<String, HandlerMapping> handlerMappingBeanMap = context.getBeansOfType(HandlerMapping.class);
+        if (!handlerMappingBeanMap.isEmpty()) {
+            this.handlerMappings = new ArrayList<>(handlerMappingBeanMap.values());
+        }
+        // 2. 如果handlerMappings 还是为空，则去默认配置中加载
+        if (handlerMappings == null) {
+            this.handlerMappings = getDefaultStrategies(context, HandlerMapping.class);
+        }
     }
 
-    /**
-     * 初始化URL映射
-     */
-    private void initMapping() {
-        for (String controllerName : this.controllerNames) {
-            Class<?> clazz = this.controllerClasses.get(controllerName);
-            Object controllerObject = this.controllerObjects.get(controllerName);
-            Method[] methods = clazz.getMethods();
-            for (Method method : methods) {
-                boolean isRequestMapping = method.isAnnotationPresent(RequestMapping.class);
-                if (isRequestMapping) {
-                    String methodName = method.getName();
-                    // 建立方法名和URL的映射
-                    String urlMapping = method.getAnnotation(RequestMapping.class).value();
-                    this.urlMappingNames.add(urlMapping);
-                    this.mappingObjects.put(urlMapping, controllerObject);
-                    this.mappingMethods.put(urlMapping, method);
-                }
+    protected <T> List<T> getDefaultStrategies(ApplicationContext context, Class<T> strategyInterface) {
+        String key = strategyInterface.getName();
+        String value = defaultStrategies.getProperty(key);
+        if (value == null) {
+            return new LinkedList<>();
+        }
+        String[] splits = value.split(",");
+        List<T> strategies = new LinkedList<>();
+        for (String split : splits) {
+            try {
+                Class<?> clazz = Class.forName(split);
+                Object strategy = this.createDefaultStrategy(context, clazz);
+                strategies.add((T) strategy);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
             }
         }
+        return strategies;
+    }
+
+    private Object createDefaultStrategy(ApplicationContext context, Class<?> clazz) {
+        return context.getAutowireCapableBeanFactory().createBean(clazz);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // 获取请求的path
-        String sPath = request.getServletPath();
-        if (!urlMappingNames.contains(sPath)) {
-            return;
-        }
 
-        Object obj = this.mappingObjects.get(sPath);
-        Object invokeResult = null;
-
-        try {
-            Method method = this.mappingMethods.get(sPath);
-            invokeResult = method.invoke(obj);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
-        if (invokeResult != null) {
-            // 防止中文乱码
-            response.setContentType("text/html;charset=UTF-8");
-            // 将响应结果写入到response中
-            response.getWriter().append(invokeResult.toString());
-        }
     }
 
 }

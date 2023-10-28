@@ -5,10 +5,7 @@ import com.tiny.spring.beans.factory.NoSuchBeanDefinitionException;
 import com.tiny.spring.beans.factory.config.BeanDefinition;
 import com.tiny.spring.beans.factory.config.ConfigurableListableBeanFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -112,6 +109,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
     @Override
     public <T> Map<String, T> getBeansOfType(Class<T> type) throws BeansException {
         String[] beanNames = getBeanNamesForType(type);
+        if (beanNames == null || beanNames.length == 0) {
+            return Collections.emptyMap();
+        }
         Map<String, T> result = new HashMap<>(beanNames.length);
         for (String beanName : beanNames) {
             Object beanInstance = getBean(beanName);

@@ -7,6 +7,7 @@ import com.tiny.spring.stereotype.Controller;
 import com.tiny.spring.web.RequestMapping;
 import com.tiny.spring.web.context.support.WebApplicationObjectSupport;
 import com.tiny.spring.web.method.HandlerMethod;
+import com.tiny.spring.web.method.MappingRegistry;
 import com.tiny.spring.web.servlet.HandlerExecutionChain;
 import com.tiny.spring.web.servlet.HandlerMapping;
 
@@ -24,7 +25,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class RequestMappingHandlerMapping extends WebApplicationObjectSupport implements HandlerMapping, InitializingBean {
 
-    private final Map<String, HandlerMethod> mappingObjects = new ConcurrentHashMap<>(16);
+    private final MappingRegistry mappingRegistry = new MappingRegistry();
+
+    public RequestMappingHandlerMapping() {
+    }
 
     @Override
     public HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
@@ -64,12 +68,13 @@ public class RequestMappingHandlerMapping extends WebApplicationObjectSupport im
                 StringBuilder mappingSb = new StringBuilder();
                 mappingSb.append(basePath)
                         .append(tryGetPath(method));
-                String mapping = mappingSb.toString();
-                if (mapping.isEmpty()) {
+                String urlMapping = mappingSb.toString();
+                if (urlMapping.isEmpty()) {
                     throw new IllegalArgumentException("The path does not conform to specifications");
                 }
-                HandlerMethod handlerMethod = new HandlerMethod(handler, method);
-                this.mappingObjects.put(mapping, handlerMethod);
+//                HandlerMethod handlerMethod = new HandlerMethod(handler, method);
+//
+                this.mappingRegistry.register(urlMapping, handler, method);
             }
         }
     }

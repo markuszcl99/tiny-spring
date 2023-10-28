@@ -30,6 +30,8 @@ public class BeanDefinition {
     private String scope = SCOPE_SINGLETON;
 
     public BeanDefinition() {
+        constructorArgumentValues = new ArgumentValues();
+        propertyValues = new PropertyValues();
     }
 
     public BeanDefinition(String id, String className) {
