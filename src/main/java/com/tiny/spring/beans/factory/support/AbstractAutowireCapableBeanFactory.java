@@ -5,6 +5,7 @@ import com.tiny.spring.beans.factory.*;
 import com.tiny.spring.beans.factory.config.AutowireCapableBeanFactory;
 import com.tiny.spring.beans.factory.config.BeanDefinition;
 import com.tiny.spring.beans.factory.config.BeanPostProcessor;
+import com.tiny.spring.context.ApplicationContextAware;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -145,6 +146,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
     private Object initializingBean(String beanName, Object bean, BeanDefinition beanDefinition) throws BeansException {
         // step1. 调用Aware回调，这里我们还不涉及，暂不实现
+        invokeAwareMethods(beanName, bean);
         // step2. 调用BeanPostProcessor#postProcessBeforeInitialization方法
         Object wrappedBean = bean;
         if (wrappedBean != null) {
@@ -152,11 +154,32 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         }
 
         // step3. 调用自定义方法，这里我们还不涉及，暂不实现
+        if (wrappedBean != null) {
+            try {
+                invokeInitMethod(beanName, wrappedBean, beanDefinition);
+            } catch (Exception e) {
+                throw new BeanCreationException(beanName, "Invocation of init method failed");
+            }
+        }
         // step4. 调用BeanPostProcessor#postProcessAfterInitialization方法
         if (wrappedBean != null) {
             wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
         }
         return wrappedBean;
+    }
+
+    private void invokeAwareMethods(String beanName, Object bean) {
+        if (bean instanceof Aware) {
+            if (bean instanceof BeanNameAware) {
+                ((BeanNameAware) bean).setBeanName(beanName);
+            }
+        }
+    }
+
+    private void invokeInitMethod(String beanName, Object wrappedBean, BeanDefinition beanDefinition) throws Exception {
+        if (wrappedBean instanceof InitializingBean) {
+            ((InitializingBean) wrappedBean).afterPropertiesSet();
+        }
     }
 
     @Override

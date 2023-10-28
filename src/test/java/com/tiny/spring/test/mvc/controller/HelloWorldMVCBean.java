@@ -1,5 +1,6 @@
 package com.tiny.spring.test.mvc.controller;
 
+import com.tiny.spring.stereotype.Controller;
 import com.tiny.spring.web.RequestMapping;
 
 /**
@@ -9,6 +10,7 @@ import com.tiny.spring.web.RequestMapping;
  * @Blog: https://markuszhang.com
  * It's my honor to share what I've learned with you!
  */
+@Controller
 public class HelloWorldMVCBean {
 
     public String doGet() {

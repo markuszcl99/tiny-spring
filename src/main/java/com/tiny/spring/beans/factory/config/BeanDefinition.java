@@ -24,7 +24,7 @@ public class BeanDefinition {
     private ArgumentValues constructorArgumentValues;
     private PropertyValues propertyValues;
     private String initMethodName;
-    private volatile Object beanClass;
+    private volatile Class<?> beanClass;
     private String id;
     private String className;
     private String scope = SCOPE_SINGLETON;
@@ -37,6 +37,12 @@ public class BeanDefinition {
     public BeanDefinition(String id, String className) {
         this.id = id;
         this.className = className;
+        try {
+            Class<?> clazz = Class.forName(className);
+            setBeanClass(clazz);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getId() {
@@ -95,11 +101,11 @@ public class BeanDefinition {
         this.initMethodName = initMethodName;
     }
 
-    public Object getBeanClass() {
+    public Class<?> getBeanClass() {
         return beanClass;
     }
 
-    public void setBeanClass(Object beanClass) {
+    public void setBeanClass(Class<?> beanClass) {
         this.beanClass = beanClass;
     }
 

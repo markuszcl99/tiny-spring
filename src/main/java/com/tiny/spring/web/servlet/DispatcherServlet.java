@@ -48,6 +48,11 @@ public class DispatcherServlet extends FrameworkServlet {
     @Override
     protected void onRefresh(ApplicationContext context) {
         initHandlerMapping(context);
+        initHandlerAdapters(context);
+    }
+
+    private void initHandlerAdapters(ApplicationContext context) {
+
     }
 
     private void initHandlerMapping(ApplicationContext context) {

@@ -147,6 +147,10 @@ public abstract class AbstractApplicationContext implements ConfigurableApplicat
         AutowiredAnnotationBeanPostProcessor autowiredAnnotationBeanPostProcessor = new AutowiredAnnotationBeanPostProcessor();
         autowiredAnnotationBeanPostProcessor.setBeanFactory(beanFactory);
         beanFactory.addBeanPostProcessor(autowiredAnnotationBeanPostProcessor);
+
+        // 这里注册一下ApplicationContextAwareProcessor
+        ApplicationContextAwareProcessor applicationContextAwareProcessor = new ApplicationContextAwareProcessor(this);
+        beanFactory.addBeanPostProcessor(applicationContextAwareProcessor);
     }
 
     protected void initApplicationEventMulticaster() {

@@ -54,7 +54,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
         if (!containsBeanDefinition(beanName)) {
             throw new NoSuchBeanDefinitionException(beanName);
         }
-        return getBeanDefinition(beanName).getBeanClass().getClass();
+        return getBeanDefinition(beanName).getBeanClass();
     }
 
     @Override
@@ -103,7 +103,20 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
     @Override
     public String[] getBeanNamesForType(Class<?> type) {
-        return this.singletonBeanNamesByType.get(type);
+        List<String> beanDefinitionNames = this.beanDefinitionNames;
+        List<String> result = new ArrayList<>();
+        for (String beanName : beanDefinitionNames) {
+            BeanDefinition beanDefinition = this.beanDefinitionMap.get(beanName);
+            try {
+                Class<?> beanClass = Class.forName(beanDefinition.getClassName());
+                if (type.isAssignableFrom(beanClass)) {
+                    result.add(beanName);
+                }
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return result.toArray(new String[0]);
     }
 
     @Override
