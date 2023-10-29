@@ -4,21 +4,17 @@ import com.sun.istack.internal.Nullable;
 import com.tiny.spring.beans.factory.InitializingBean;
 import com.tiny.spring.core.annotation.AnnotatedElementUtils;
 import com.tiny.spring.stereotype.Controller;
-import com.tiny.spring.web.RequestMapping;
+import com.tiny.spring.web.bind.annotation.RequestMapping;
 import com.tiny.spring.web.context.support.WebApplicationObjectSupport;
 import com.tiny.spring.web.method.HandlerMethod;
 import com.tiny.spring.web.method.MappingRegistry;
-import com.tiny.spring.web.method.RequestMappingHandlerAdapter;
 import com.tiny.spring.web.servlet.HandlerExecutionChain;
 import com.tiny.spring.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author: markus

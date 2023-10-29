@@ -1,7 +1,6 @@
 package com.tiny.spring.test.mvc.controller;
 
 import com.tiny.spring.stereotype.Controller;
-import com.tiny.spring.web.RequestMapping;
 
 /**
  * @author: markus
@@ -11,7 +10,6 @@ import com.tiny.spring.web.RequestMapping;
  * It's my honor to share what I've learned with you!
  */
 @Controller
-@RequestMapping(value = "/tiny-mvc")
 public class HelloWorldMVCBean {
 
     public String doGet() {
@@ -22,12 +20,10 @@ public class HelloWorldMVCBean {
         return "hello world!";
     }
 
-    @RequestMapping("/test")
     public String doTest() {
         return "Hello world! @RequestMapping feature test success!";
     }
 
-    @RequestMapping("/chinese")
     public String chinese() {
         return "测试一下中文。";
     }
