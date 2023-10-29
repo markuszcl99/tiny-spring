@@ -8,6 +8,9 @@ import com.tiny.spring.web.context.XmlWebApplicationContext;
 import com.tiny.spring.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * @author: markus
@@ -16,7 +19,7 @@ import javax.servlet.ServletException;
  * @Blog: https://markuszhang.com
  * It's my honor to share what I've learned with you!
  */
-public class FrameworkServlet extends HttpServletBean {
+public abstract class FrameworkServlet extends HttpServletBean {
 
     public static final Class<?> DEFAULT_CONTEXT_CLASS = XmlWebApplicationContext.class;
 
@@ -101,4 +104,30 @@ public class FrameworkServlet extends HttpServletBean {
     public void setContextClass(Class<?> contextClass) {
         this.contextClass = contextClass;
     }
+
+
+    @Override
+    protected final void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        processRequest(req, resp);
+    }
+
+    @Override
+    protected final void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        processRequest(req, resp);
+    }
+
+    protected final void processRequest(HttpServletRequest request, HttpServletResponse response) {
+        // 1. 处理其他事情
+
+        // 2. 处理请求
+        try {
+            doService(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // 3. 处理其他事情
+    }
+
+    protected abstract void doService(HttpServletRequest request, HttpServletResponse response) throws Exception;
 }

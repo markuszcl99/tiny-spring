@@ -1,5 +1,6 @@
 package com.tiny.spring.web.servlet;
 
+import com.sun.istack.internal.Nullable;
 import com.tiny.spring.context.support.ApplicationContext;
 import com.tiny.spring.core.io.support.PropertiesLoaderUtils;
 import com.tiny.spring.util.ClassUtils;
@@ -46,6 +47,40 @@ public class DispatcherServlet extends FrameworkServlet {
     protected void onRefresh(ApplicationContext context) {
         initHandlerMapping(context);
         initHandlerAdapters(context);
+    }
+
+    @Override
+    protected void doService(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        HandlerExecutionChain mappedHandler = null;
+        mappedHandler = getHandler(request);
+        if (mappedHandler == null) {
+            return;
+        }
+        HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
+        ha.handler(request, response, mappedHandler.getHandler());
+    }
+
+    private HandlerAdapter getHandlerAdapter(Object handler) throws ServletException {
+        for (HandlerAdapter handlerAdapter : handlerAdapters) {
+            if (handlerAdapter.supports(handler)) {
+                return handlerAdapter;
+            }
+        }
+        throw new ServletException("No adapter for handler [" + handler +
+                "]: The DispatcherServlet configuration needs to include a HandlerAdapter that supports this handler");
+    }
+
+    @Nullable
+    private HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
+        if (this.handlerMappings != null) {
+            for (HandlerMapping handlerMapping : handlerMappings) {
+                HandlerExecutionChain handler = handlerMapping.getHandler(request);
+                if (handler != null) {
+                    return handler;
+                }
+            }
+        }
+        return null;
     }
 
     private void initHandlerAdapters(ApplicationContext context) {
@@ -95,10 +130,6 @@ public class DispatcherServlet extends FrameworkServlet {
 
     private Object createDefaultStrategy(ApplicationContext context, Class<?> clazz) {
         return context.getAutowireCapableBeanFactory().createBean(clazz);
-    }
-
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
     }
 
 }

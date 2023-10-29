@@ -24,7 +24,7 @@ public class TomcatApp {
 
         Tomcat tomcat = new Tomcat();
         String webappDirLocation = "webapp";
-        StandardContext context = (StandardContext) tomcat.addWebapp(classPath, new File(classPath + webappDirLocation).getAbsolutePath());
+        StandardContext context = (StandardContext) tomcat.addWebapp("/", new File(webappDirLocation).getAbsolutePath());
         Connector connector = new Connector();
         connector.setPort(8080);
         tomcat.setConnector(connector);

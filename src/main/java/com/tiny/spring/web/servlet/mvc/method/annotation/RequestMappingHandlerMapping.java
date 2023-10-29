@@ -8,6 +8,7 @@ import com.tiny.spring.web.RequestMapping;
 import com.tiny.spring.web.context.support.WebApplicationObjectSupport;
 import com.tiny.spring.web.method.HandlerMethod;
 import com.tiny.spring.web.method.MappingRegistry;
+import com.tiny.spring.web.method.RequestMappingHandlerAdapter;
 import com.tiny.spring.web.servlet.HandlerExecutionChain;
 import com.tiny.spring.web.servlet.HandlerMapping;
 
@@ -35,7 +36,11 @@ public class RequestMappingHandlerMapping extends WebApplicationObjectSupport im
 
     @Override
     public HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
-        return null;
+        String uri = request.getRequestURI();
+        Method method = mappingRegistry.getMappingMethods().get(uri);
+        Object bean = mappingRegistry.getMappingObjs().get(uri);
+        HandlerMethod handlerMethod = new HandlerMethod(bean, method);
+        return new HandlerExecutionChain(handlerMethod);
     }
 
     @Override
