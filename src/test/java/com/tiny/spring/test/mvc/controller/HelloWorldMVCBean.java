@@ -1,6 +1,7 @@
 package com.tiny.spring.test.mvc.controller;
 
 import com.tiny.spring.stereotype.Controller;
+import com.tiny.spring.web.bind.annotation.RequestMapping;
 
 /**
  * @author: markus
@@ -10,6 +11,7 @@ import com.tiny.spring.stereotype.Controller;
  * It's my honor to share what I've learned with you!
  */
 @Controller
+@RequestMapping("/tiny-mvc")
 public class HelloWorldMVCBean {
 
     public String doGet() {
@@ -26,5 +28,10 @@ public class HelloWorldMVCBean {
 
     public String chinese() {
         return "测试一下中文。";
+    }
+
+    @RequestMapping("/test-param")
+    public String testParam(String id) {
+        return "Hello world! @RequestMapping carry param feature test success! param id: " + id;
     }
 }

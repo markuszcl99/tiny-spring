@@ -2,6 +2,7 @@ package com.tiny.spring.beans.factory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: markus
@@ -15,6 +16,14 @@ public class PropertyValues {
 
     public PropertyValues() {
         this.propertyValueList = new ArrayList<>(0);
+    }
+
+    public PropertyValues(Map<String, Object> map) {
+        this.propertyValueList = new ArrayList<PropertyValue>(10);
+        for (Map.Entry<String, Object> property : map.entrySet()) {
+            PropertyValue pv = new PropertyValue(property.getKey(), property.getValue());
+            propertyValueList.add(pv);
+        }
     }
 
     public List<PropertyValue> getPropertyValueList() {

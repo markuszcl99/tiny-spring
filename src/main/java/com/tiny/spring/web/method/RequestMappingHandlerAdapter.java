@@ -5,6 +5,8 @@ import com.tiny.spring.beans.factory.InitializingBean;
 import com.tiny.spring.context.ApplicationContextAware;
 import com.tiny.spring.context.ConfigurableApplicationContext;
 import com.tiny.spring.context.support.ApplicationContext;
+import com.tiny.spring.web.bind.WebDataBinder;
+import com.tiny.spring.web.bind.WebDataBinderFactory;
 import com.tiny.spring.web.servlet.HandlerAdapter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 
 /**
  * @author: markus
@@ -30,16 +33,28 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter, Application
     }
 
     @Override
-    public void handler(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public void handler(HttpServletRequest request, HttpServletResponse response, Object handler) throws InstantiationException, IllegalAccessException {
         handlerInternal(request, response, (HandlerMethod) handler);
     }
 
-    private void handlerInternal(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) {
+    private void handlerInternal(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) throws InstantiationException, IllegalAccessException {
+        WebDataBinderFactory webDataBinderFactory = new WebDataBinderFactory();
+        Parameter[] methodParameters = handler.getMethod().getParameters();
+        Object[] methodParamObjs = new Object[methodParameters.length];
+        int i = 0;
+        for (Parameter methodParameter : methodParameters) {
+            Object methodParamObj = methodParameter.getType().newInstance();
+            WebDataBinder webDataBinder = webDataBinderFactory.createBinder(request, methodParamObj, methodParameter.getName());
+            webDataBinder.bind(request);
+            methodParamObjs[i] = methodParamObj;
+            i++;
+        }
+
         Method method = handler.getMethod();
         Object obj = handler.getBean();
         Object result = null;
         try {
-            result = method.invoke(obj);
+            result = method.invoke(obj, methodParamObjs);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
