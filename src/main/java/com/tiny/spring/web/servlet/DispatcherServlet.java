@@ -33,16 +33,13 @@ public class DispatcherServlet extends FrameworkServlet {
      */
     private List<HandlerMapping> handlerMappings = new ArrayList<>();
 
+    /**
+     * 执行controller的适配器的组件
+     */
+    private List<HandlerAdapter> handlerAdapters = new ArrayList<>();
+
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-    }
-
-    /**
-     * 读取mappingValues中的Bean定义
-     */
-    protected void Refresh() {
-//        initMapping();
-
     }
 
     @Override
@@ -52,7 +49,14 @@ public class DispatcherServlet extends FrameworkServlet {
     }
 
     private void initHandlerAdapters(ApplicationContext context) {
-
+        this.handlerAdapters = null;
+        Map<String, HandlerAdapter> handlerAdapterBeanMap = context.getBeansOfType(HandlerAdapter.class);
+        if (!handlerAdapterBeanMap.isEmpty()) {
+            this.handlerAdapters = new ArrayList<>(handlerAdapterBeanMap.values());
+        }
+        if (this.handlerAdapters == null) {
+            this.handlerAdapters = getDefaultStrategies(context, HandlerAdapter.class);
+        }
     }
 
     private void initHandlerMapping(ApplicationContext context) {

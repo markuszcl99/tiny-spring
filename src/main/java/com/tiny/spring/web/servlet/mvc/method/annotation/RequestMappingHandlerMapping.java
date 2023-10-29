@@ -75,8 +75,6 @@ public class RequestMappingHandlerMapping extends WebApplicationObjectSupport im
                 if (urlMapping.isEmpty()) {
                     throw new IllegalArgumentException("The path does not conform to specifications");
                 }
-//                HandlerMethod handlerMethod = new HandlerMethod(handler, method);
-//
                 this.mappingRegistry.register(urlMapping, handler, method);
             }
         }
