@@ -12,7 +12,10 @@ import com.tiny.spring.web.servlet.HandlerExecutionChain;
 import com.tiny.spring.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -64,7 +67,7 @@ public class RequestMappingHandlerMapping extends WebApplicationObjectSupport im
             // 遍历这个类里面的方法，然后构建一个url到controller的映射
             // 获取当前类是否被@RequestMapping标注，如果被标注了，就获取它的url，如果没有则忽略
             String basePath = tryGetPath(handlerType);
-            for (Method method : handlerType.getMethods()) {
+            for (Method method : getHandlerMethod(handlerType)) {
                 StringBuilder mappingSb = new StringBuilder();
                 mappingSb.append(basePath)
                         .append(tryGetPath(method));
@@ -79,13 +82,24 @@ public class RequestMappingHandlerMapping extends WebApplicationObjectSupport im
         }
     }
 
-    @Nullable
+    private List<Method> getHandlerMethod(Class<?> handlerType) {
+        Method[] candidateMethods = handlerType.getMethods();
+        List<Method> result = new ArrayList<>();
+        for (Method candidateMethod : candidateMethods) {
+            boolean hasRequestMappingAnnotation = AnnotatedElementUtils.hasAnnotation(candidateMethod, RequestMapping.class);
+            if (hasRequestMappingAnnotation) {
+                result.add(candidateMethod);
+            }
+        }
+        return result;
+    }
+
     private String tryGetPath(Class<?> handlerType) {
         RequestMapping annotation = handlerType.getAnnotation(RequestMapping.class);
         if (annotation != null) {
             return annotation.value();
         }
-        return null;
+        return "";
     }
 
     @Nullable
