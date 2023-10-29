@@ -11,6 +11,7 @@ import com.tiny.spring.web.RequestMapping;
  * It's my honor to share what I've learned with you!
  */
 @Controller
+@RequestMapping(value = "/tiny-mvc")
 public class HelloWorldMVCBean {
 
     public String doGet() {
@@ -24,5 +25,10 @@ public class HelloWorldMVCBean {
     @RequestMapping("/test")
     public String doTest() {
         return "Hello world! @RequestMapping feature test success!";
+    }
+
+    @RequestMapping("/chinese")
+    public String chinese() {
+        return "测试一下中文。";
     }
 }

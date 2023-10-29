@@ -12,11 +12,12 @@ import java.lang.annotation.Target;
  * @Blog: https://markuszhang.com
  * It's my honor to share what I've learned with you!
  */
-@Target(value = {ElementType.METHOD})
+@Target(value = {ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequestMapping {
     /**
      * 配置相应的url
+     *
      * @return
      */
     String value() default "";

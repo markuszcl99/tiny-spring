@@ -44,9 +44,9 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter, Application
             e.printStackTrace();
         }
         try {
+            response.setContentType("text/html;charset=UTF-8");
             response.getWriter().append(result.toString());
             // 防止中文乱码
-            response.setContentType("text/html;charset=UTF-8");
         } catch (IOException e) {
             e.printStackTrace();
         }

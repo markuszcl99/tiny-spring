@@ -35,10 +35,14 @@ public class RequestMappingHandlerMapping extends WebApplicationObjectSupport im
     }
 
     @Override
+    @Nullable
     public HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
         String uri = request.getRequestURI();
         Method method = mappingRegistry.getMappingMethods().get(uri);
         Object bean = mappingRegistry.getMappingObjs().get(uri);
+        if (method == null || bean == null) {
+            return null;
+        }
         HandlerMethod handlerMethod = new HandlerMethod(bean, method);
         return new HandlerExecutionChain(handlerMethod);
     }
