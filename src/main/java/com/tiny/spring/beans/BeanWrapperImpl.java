@@ -46,9 +46,17 @@ public class BeanWrapperImpl extends PropertyEditorRegistrySupport {
 
     public void setPropertyValue(PropertyValue pv) {
         BeanPropertyHandler handler = new BeanPropertyHandler(pv.getName());
-        PropertyEditor editor = this.getDefaultEditor(handler.getPropertyClz());
+        PropertyEditor editor = getPropertyEditor(handler.getPropertyClz());
         editor.setAsText((String) pv.getValue());
         handler.setValue(editor.getValue());
+    }
+
+    private PropertyEditor getPropertyEditor(Class<?> clazz) {
+        if (hasCustomEditorForElement(clazz)) {
+            return getCustomEditor(clazz);
+        } else {
+            return getDefaultEditor(clazz);
+        }
     }
 
     class BeanPropertyHandler {

@@ -1,5 +1,7 @@
 package com.tiny.spring.test.mvc.domain;
 
+import java.util.Date;
+
 /**
  * @author: markus
  * @date: 2023/10/30 10:58 PM
@@ -10,6 +12,7 @@ package com.tiny.spring.test.mvc.domain;
 public class User {
     private String username;
     private String password;
+    private Date birthday;
 
     public String getUsername() {
         return username;
@@ -27,11 +30,20 @@ public class User {
         this.password = password;
     }
 
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", birthday=" + birthday +
                 '}';
     }
 }

@@ -52,12 +52,12 @@ public class PropertyEditorRegistrySupport {
         this.customEditors.put(requiredType, propertyEditor);
     }
 
-    public boolean hasCustomEditorForElement(Class elementType) {
+    protected boolean hasCustomEditorForElement(Class elementType) {
         return (elementType != null && this.customEditors != null && this.customEditors.containsKey(elementType));
     }
 
     //获取自定义转换器
-    private PropertyEditor getCustomEditor(Class requiredType) {
+    protected PropertyEditor getCustomEditor(Class requiredType) {
         if (requiredType == null || this.customEditors == null) {
             return null;
         }

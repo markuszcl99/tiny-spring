@@ -1,12 +1,15 @@
 package com.tiny.spring.web.bind;
 
 import com.tiny.spring.beans.BeanWrapperImpl;
+import com.tiny.spring.beans.PropertyEditorRegistrySupport;
 import com.tiny.spring.beans.factory.PropertyValues;
 import com.tiny.spring.core.MethodParameter;
 import com.tiny.spring.web.util.WebUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.beans.PropertyEditor;
 import java.lang.reflect.Parameter;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -21,6 +24,7 @@ public class WebDataBinder {
     private Class<?> type;
     private String objectName;
 
+    private BeanWrapperImpl propertyAccessor;
 
     public WebDataBinder(Object target) {
         this(target, "");
@@ -30,6 +34,7 @@ public class WebDataBinder {
         this.target = target;
         this.objectName = objectName;
         this.type = target.getClass();
+        this.propertyAccessor = new BeanWrapperImpl(this.target);
     }
 
     public void bind(HttpServletRequest request) {
@@ -38,9 +43,8 @@ public class WebDataBinder {
         doBind(pvs);
     }
 
-    public <T> T convertIfNecessary(Object value, Class<T> requiredType, Parameter parameter) {
-        // 进行类型转换
-        return null;
+    public void registerCustomEditor(Class<?> requiredType, PropertyEditor propertyEditor) {
+        getPropertyAccessor().registerCustomEditor(requiredType, propertyEditor);
     }
 
     protected void addBindValues(PropertyValues pvs, HttpServletRequest request) {
@@ -56,7 +60,7 @@ public class WebDataBinder {
     }
 
     protected BeanWrapperImpl getPropertyAccessor() {
-        return new BeanWrapperImpl(this.target);
+        return this.propertyAccessor;
     }
 
     private PropertyValues assignParameters(HttpServletRequest request) {

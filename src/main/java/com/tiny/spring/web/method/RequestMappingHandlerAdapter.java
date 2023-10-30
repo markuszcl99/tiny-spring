@@ -7,6 +7,7 @@ import com.tiny.spring.context.ConfigurableApplicationContext;
 import com.tiny.spring.context.support.ApplicationContext;
 import com.tiny.spring.web.bind.WebDataBinder;
 import com.tiny.spring.web.bind.WebDataBinderFactory;
+import com.tiny.spring.web.bind.support.WebBindingInitializer;
 import com.tiny.spring.web.servlet.HandlerAdapter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +28,8 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter, Application
 
     private ConfigurableApplicationContext applicationContext;
 
+    private WebBindingInitializer webBindingInitializer;
+
     @Override
     public boolean supports(Object handler) {
         return handler instanceof HandlerMethod;
@@ -45,6 +48,7 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter, Application
         for (Parameter methodParameter : methodParameters) {
             Object methodParamObj = methodParameter.getType().newInstance();
             WebDataBinder webDataBinder = webDataBinderFactory.createBinder(request, methodParamObj, methodParameter.getName());
+            webBindingInitializer.initBinder(webDataBinder);
             webDataBinder.bind(request);
             methodParamObjs[i] = methodParamObj;
             i++;
@@ -69,7 +73,7 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter, Application
 
     @Override
     public void afterPropertiesSet() throws Exception {
-
+        this.webBindingInitializer = (WebBindingInitializer) applicationContext.getBean("webBindingInitializer");
     }
 
     @Override
