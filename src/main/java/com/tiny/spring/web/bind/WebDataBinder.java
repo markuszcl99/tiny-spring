@@ -2,9 +2,11 @@ package com.tiny.spring.web.bind;
 
 import com.tiny.spring.beans.BeanWrapperImpl;
 import com.tiny.spring.beans.factory.PropertyValues;
+import com.tiny.spring.core.MethodParameter;
 import com.tiny.spring.web.util.WebUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Parameter;
 import java.util.Map;
 
 /**
@@ -18,6 +20,7 @@ public class WebDataBinder {
     private Object target;
     private Class<?> type;
     private String objectName;
+
 
     public WebDataBinder(Object target) {
         this(target, "");
@@ -33,6 +36,11 @@ public class WebDataBinder {
         PropertyValues pvs = assignParameters(request);
         addBindValues(pvs, request);
         doBind(pvs);
+    }
+
+    public <T> T convertIfNecessary(Object value, Class<T> requiredType, Parameter parameter) {
+        // 进行类型转换
+        return null;
     }
 
     protected void addBindValues(PropertyValues pvs, HttpServletRequest request) {

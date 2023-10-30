@@ -1,6 +1,7 @@
 package com.tiny.spring.test.mvc.controller;
 
 import com.tiny.spring.stereotype.Controller;
+import com.tiny.spring.test.mvc.domain.User;
 import com.tiny.spring.web.bind.annotation.RequestMapping;
 
 /**
@@ -31,7 +32,7 @@ public class HelloWorldMVCBean {
     }
 
     @RequestMapping("/test-param")
-    public String testParam(String id) {
-        return "Hello world! @RequestMapping carry param feature test success! param id: " + id;
+    public String testParam(User user) {
+        return "Hello world! @RequestMapping carry param feature test success! param user: " + user;
     }
 }

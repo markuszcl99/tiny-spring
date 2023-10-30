@@ -65,7 +65,7 @@ public class BeanWrapperImpl extends PropertyEditorRegistrySupport {
                 Field field = clazz.getDeclaredField(propertyName);
                 propertyClz = field.getType();
                 this.writeMethod = clazz.getDeclaredMethod("set" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1), propertyClz);
-                this.readMethod = clazz.getDeclaredMethod("get" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1), propertyClz);
+                this.readMethod = clazz.getDeclaredMethod("get" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1));
             } catch (NoSuchFieldException | NoSuchMethodException e) {
                 e.printStackTrace();
             }
