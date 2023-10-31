@@ -5,15 +5,18 @@ import com.tiny.spring.beans.factory.InitializingBean;
 import com.tiny.spring.context.ApplicationContextAware;
 import com.tiny.spring.context.ConfigurableApplicationContext;
 import com.tiny.spring.context.support.ApplicationContext;
+import com.tiny.spring.core.annotation.AnnotatedElementUtils;
 import com.tiny.spring.web.bind.WebDataBinder;
 import com.tiny.spring.web.bind.WebDataBinderFactory;
+import com.tiny.spring.web.bind.annotation.ResponseBody;
 import com.tiny.spring.web.bind.support.WebBindingInitializer;
+import com.tiny.spring.web.http.convert.HttpMessageConverter;
 import com.tiny.spring.web.servlet.HandlerAdapter;
+import com.tiny.spring.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
@@ -28,7 +31,14 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter, Application
 
     private ConfigurableApplicationContext applicationContext;
 
+    /**
+     * 请求参数 数据绑定
+     */
     private WebBindingInitializer webBindingInitializer;
+    /**
+     * 将返回的数据序列化为json信息返回给前端
+     */
+    private HttpMessageConverter httpMessageConverter;
 
     @Override
     public boolean supports(Object handler) {
@@ -36,11 +46,11 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter, Application
     }
 
     @Override
-    public void handler(HttpServletRequest request, HttpServletResponse response, Object handler) throws InstantiationException, IllegalAccessException {
-        handlerInternal(request, response, (HandlerMethod) handler);
+    public ModelAndView handler(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        return handlerInternal(request, response, (HandlerMethod) handler);
     }
 
-    private void handlerInternal(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) throws InstantiationException, IllegalAccessException {
+    private ModelAndView handlerInternal(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) throws Exception {
         WebDataBinderFactory webDataBinderFactory = new WebDataBinderFactory();
         Parameter[] methodParameters = handler.getMethod().getParameters();
         Object[] methodParamObjs = new Object[methodParameters.length];
@@ -56,24 +66,32 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter, Application
 
         Method method = handler.getMethod();
         Object obj = handler.getBean();
-        Object result = null;
-        try {
-            result = method.invoke(obj, methodParamObjs);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
+        Object result = method.invoke(obj, methodParamObjs);
+        Object returnType = method.getReturnType();
+
+        ModelAndView mv = null;
+        // 返回数据
+        if (AnnotatedElementUtils.hasAnnotation(method, ResponseBody.class)) {
+            // 将返回结果序列化并写入到response中
+            this.httpMessageConverter.write(result, response);
+        } else if (returnType == Void.class) {
+
+        } else {
+            // 返回页面
+            if (result instanceof ModelAndView) {
+                mv = (ModelAndView) result;
+            } else if (result instanceof String) {
+                String viewName = (String) result;
+                mv = new ModelAndView(viewName);
+            }
         }
-        try {
-            response.setContentType("text/html;charset=UTF-8");
-            response.getWriter().append(result.toString());
-            // 防止中文乱码
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return mv;
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
         this.webBindingInitializer = (WebBindingInitializer) applicationContext.getBean("webBindingInitializer");
+        this.httpMessageConverter = (HttpMessageConverter) applicationContext.getBean("httpMessageConverter");
     }
 
     @Override

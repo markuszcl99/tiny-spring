@@ -5,7 +5,6 @@ import com.tiny.spring.beans.factory.InitializingBean;
 import com.tiny.spring.core.annotation.AnnotatedElementUtils;
 import com.tiny.spring.stereotype.Controller;
 import com.tiny.spring.web.bind.annotation.RequestMapping;
-import com.tiny.spring.web.bind.support.WebBindingInitializer;
 import com.tiny.spring.web.context.support.WebApplicationObjectSupport;
 import com.tiny.spring.web.method.HandlerMethod;
 import com.tiny.spring.web.method.MappingRegistry;

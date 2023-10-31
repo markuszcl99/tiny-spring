@@ -1,5 +1,8 @@
 package com.tiny.spring.test.mvc.domain;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 /**
@@ -40,10 +43,11 @@ public class User {
 
     @Override
     public String toString() {
+        LocalDate localDate = birthday.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         return "User{" +
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
-                ", birthday=" + birthday +
+                ", birthday=" + localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) +
                 '}';
     }
 }

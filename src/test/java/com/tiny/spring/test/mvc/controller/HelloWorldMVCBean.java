@@ -4,8 +4,6 @@ import com.tiny.spring.stereotype.Controller;
 import com.tiny.spring.test.mvc.domain.User;
 import com.tiny.spring.web.bind.annotation.RequestMapping;
 
-import java.util.Date;
-
 /**
  * @author: markus
  * @date: 2023/10/16 10:41 PM

@@ -14,5 +14,5 @@ public interface HandlerAdapter {
 
     boolean supports(Object handler);
 
-    void handler(HttpServletRequest request, HttpServletResponse response, Object handler) throws InstantiationException, IllegalAccessException;
+    ModelAndView handler(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception;
 }
