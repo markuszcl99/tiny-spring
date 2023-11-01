@@ -3,6 +3,8 @@ package com.tiny.spring.test.mvc.controller;
 import com.tiny.spring.stereotype.Controller;
 import com.tiny.spring.test.mvc.domain.User;
 import com.tiny.spring.web.bind.annotation.RequestMapping;
+import com.tiny.spring.web.bind.annotation.ResponseBody;
+import com.tiny.spring.web.servlet.ModelAndView;
 
 /**
  * @author: markus
@@ -32,7 +34,13 @@ public class HelloWorldMVCBean {
     }
 
     @RequestMapping("/test-param")
-    public String testParam(User user) {
-        return "Hello world! @RequestMapping carry param feature test success! param user: " + user;
+    @ResponseBody
+    public User testParam(User user) {
+        return user;
+    }
+
+    @RequestMapping("/test-view-name")
+    public String testViewName(User user) {
+        return "success";
     }
 }

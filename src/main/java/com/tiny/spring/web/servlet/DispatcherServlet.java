@@ -4,6 +4,7 @@ import com.sun.istack.internal.Nullable;
 import com.tiny.spring.context.support.ApplicationContext;
 import com.tiny.spring.core.io.support.PropertiesLoaderUtils;
 import com.tiny.spring.util.ClassUtils;
+import com.tiny.spring.util.StringUtils;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -39,6 +40,11 @@ public class DispatcherServlet extends FrameworkServlet {
      */
     private List<HandlerAdapter> handlerAdapters = new ArrayList<>();
 
+    /**
+     * 视图解析器
+     */
+    private List<ViewResolver> viewResolvers;
+
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
     }
@@ -47,6 +53,7 @@ public class DispatcherServlet extends FrameworkServlet {
     protected void onRefresh(ApplicationContext context) {
         initHandlerMapping(context);
         initHandlerAdapters(context);
+        initViewResolvers(context);
     }
 
     @Override
@@ -57,7 +64,33 @@ public class DispatcherServlet extends FrameworkServlet {
             return;
         }
         HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
-        ha.handler(request, response, mappedHandler.getHandler());
+        ModelAndView mv = ha.handler(request, response, mappedHandler.getHandler());
+        if (mv != null) {
+            // 不为空的话，就渲染一下
+            render(mv, request, response);
+        }
+
+    }
+
+    private void render(ModelAndView mv, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String viewName = mv.getViewName();
+        if (StringUtils.hasText(viewName)) {
+            View view = getViewResolver(viewName);
+            if (view == null) {
+                throw new ServletException("Could not resolve view with name '" + mv.getViewName() + "' in servlet with name '" + this.getServletName() + "'");
+            }
+            view.render(mv.getModel(), request, response);
+        }
+    }
+
+    private View getViewResolver(String viewName) throws Exception {
+        for (ViewResolver viewResolver : this.viewResolvers) {
+            View view = viewResolver.resolveViewName(viewName);
+            if (view != null) {
+                return view;
+            }
+        }
+        return null;
     }
 
     private HandlerAdapter getHandlerAdapter(Object handler) throws ServletException {
@@ -82,6 +115,18 @@ public class DispatcherServlet extends FrameworkServlet {
         }
         return null;
     }
+
+    private void initViewResolvers(ApplicationContext context) {
+        this.viewResolvers = null;
+        Map<String, ViewResolver> viewResolverMap = context.getBeansOfType(ViewResolver.class);
+        if (!viewResolverMap.isEmpty()) {
+            this.viewResolvers = new ArrayList<>(viewResolverMap.values());
+        }
+        if (this.viewResolvers == null) {
+            this.viewResolvers = getDefaultStrategies(context, ViewResolver.class);
+        }
+    }
+
 
     private void initHandlerAdapters(ApplicationContext context) {
         this.handlerAdapters = null;
