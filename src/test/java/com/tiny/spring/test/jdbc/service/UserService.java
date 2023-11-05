@@ -2,6 +2,7 @@ package com.tiny.spring.test.jdbc.service;
 
 import com.tiny.spring.beans.factory.annotation.Autowired;
 import com.tiny.spring.jdbc.core.JdbcTemplate;
+import com.tiny.spring.jdbc.core.RowMapper;
 import com.tiny.spring.jdbc.core.StatementCallback;
 import com.tiny.spring.test.jdbc.entity.User;
 
@@ -53,6 +54,24 @@ public class UserService {
             return null;
         });
         return userByUserId;
+    }
+
+    public List<User> getUserInfoListByNotSpecifyId(Long userId) {
+        String sql = "select * from user where id != ?";
+        RowMapper<User> rowMapper = new RowMapper<User>() {
+            @Override
+            public User mapToRow(ResultSet rs, int rowNum) throws SQLException {
+                long id = rs.getLong("id");
+                String name = rs.getString("name");
+                int age = rs.getInt("age");
+                User user = new User();
+                user.setId(id);
+                user.setName(name);
+                user.setAge(age);
+                return user;
+            }
+        };
+        return jdbcTemplate.query(sql, new Object[]{userId}, rowMapper);
     }
 
 //    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {

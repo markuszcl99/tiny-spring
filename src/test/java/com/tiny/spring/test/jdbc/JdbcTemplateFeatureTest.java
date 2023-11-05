@@ -4,6 +4,8 @@ import com.tiny.spring.context.support.ClassPathXmlApplicationContext;
 import com.tiny.spring.test.jdbc.entity.User;
 import com.tiny.spring.test.jdbc.service.UserService;
 
+import java.util.List;
+
 /**
  * @author: markus
  * @date: 2023/11/5 6:23 PM
@@ -17,5 +19,11 @@ public class JdbcTemplateFeatureTest {
         UserService userService = (UserService) context.getBean("userService");
         User userInfo = userService.getUserInfoByPStat(1L);
         System.out.println(userInfo);
+
+        System.out.println("list row start ---------");
+        List<User> userInfoListByNotSpecifyId = userService.getUserInfoListByNotSpecifyId(1L);
+        for (User user : userInfoListByNotSpecifyId) {
+            System.out.println(user);
+        }
     }
 }
