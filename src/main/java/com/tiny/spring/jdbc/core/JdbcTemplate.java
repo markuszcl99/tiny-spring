@@ -49,16 +49,8 @@ public class JdbcTemplate {
         try {
             connection = dataSource.getConnection();
             preparedStatement = connection.prepareStatement(sql);
-            for (int i = 0; i < args.length; i++) {
-                Object arg = args[0];
-                if (arg instanceof String) {
-                    preparedStatement.setString(i + 1, (String) arg);
-                } else if (arg instanceof Integer) {
-                    preparedStatement.setInt(i + 1, (Integer) arg);
-                } else if (arg instanceof Long) {
-                    preparedStatement.setLong(i + 1, (Long) arg);
-                }
-            }
+            ArgumentPreparedStatementSetter argumentSetter = new ArgumentPreparedStatementSetter(args);
+            argumentSetter.setValues(preparedStatement);
             return preparedStatementCallback.doInStatement(preparedStatement);
         } catch (SQLException e) {
             e.printStackTrace();

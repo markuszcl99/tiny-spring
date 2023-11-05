@@ -15,7 +15,7 @@ public class JdbcTemplateFeatureTest {
     public static void main(String[] args) {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
         UserService userService = (UserService) context.getBean("userService");
-        User userInfo = userService.getUserInfo(1L);
+        User userInfo = userService.getUserInfoByPStat(1L);
         System.out.println(userInfo);
     }
 }
