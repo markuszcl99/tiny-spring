@@ -28,4 +28,18 @@
         <constructor-arg name="property3" value="property3"/>
         <property type="Integer" name="age" value="24"/>
     </bean>
+
+    <!--jdbc 相关内容 start-->
+    <bean id="jdbcTemplate" class="com.tiny.spring.jdbc.core.JdbcTemplate">
+        <!--采用@Autowired实现-->
+<!--        <property name="dataSource" type="javax.sql.DataSource" ref="dataSource"/>-->
+    </bean>
+    <bean id="userService" class="com.tiny.spring.test.jdbc.service.UserService"/>
+    <bean id="dataSource" class="com.tiny.spring.jdbc.datasource.SingleConnectionDataSource">
+        <property type="String" name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property type="String" name="url" value="jdbc:mysql://localhost:3306/spring"/>
+        <property type="String" name="username" value="root"/>
+        <property type="String" name="password" value="root"/>
+    </bean>
+    <!--jdbc 相关内容 end-->
 </beans>

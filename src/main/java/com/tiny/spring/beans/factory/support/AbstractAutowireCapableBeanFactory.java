@@ -137,7 +137,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
                     method = clazz.getMethod(methodName, paramTypes);
                     method.invoke(obj, paramValues);
                 } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                    throw new BeansException("bean setter method invoke error,bean id is " + bd.getId() + ",method is " + methodName);
+                    throw new BeansException("bean setter method invoke error,bean id is " + bd.getId() + ",method is " + methodName, e);
                 }
 
             }

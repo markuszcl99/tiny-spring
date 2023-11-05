@@ -42,6 +42,13 @@
             <version>9.0.74</version>
         </dependency>
 
+        <!-- mysql 驱动-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.26</version>
+        </dependency>
+
 
 
     </dependencies>
