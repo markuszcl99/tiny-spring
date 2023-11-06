@@ -1,5 +1,7 @@
 package com.tiny.spring.test.jdbc.service;
 
+import com.tiny.spring.batis.SqlSession;
+import com.tiny.spring.batis.SqlSessionFactory;
 import com.tiny.spring.beans.factory.annotation.Autowired;
 import com.tiny.spring.jdbc.core.JdbcTemplate;
 import com.tiny.spring.jdbc.core.RowMapper;
@@ -23,21 +25,23 @@ public class UserService {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private SqlSessionFactory sqlSessionFactory;
 
     public User getUserInfo(Long userId) {
-        String sql = "select * from user where id =" + userId;
-        User userByUserId = (User) jdbcTemplate.query((stat) -> {
-            ResultSet resultSet = stat.executeQuery(sql);
+        String sqlId = "com.tiny.spring.test.jdbc.entity.User.getUserInfo";
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        return (User) sqlSession.selectOne(sqlId, new Object[]{userId}, (pstmt) -> {
+            ResultSet rs = pstmt.executeQuery();
             User user = null;
-            if (resultSet.next()) {
+            if (rs.next()) {
                 user = new User();
-                user.setId(resultSet.getLong("id"));
-                user.setAge(resultSet.getInt("age"));
-                user.setName(resultSet.getString("name"));
+                user.setId(rs.getLong("id"));
+                user.setName(rs.getString("name"));
+                user.setAge(rs.getInt("age"));
             }
             return user;
         });
-        return userByUserId;
     }
 
     public User getUserInfoByPStat(Long userId) {

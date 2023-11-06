@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<mapper namespace="com.tiny.spring.test.jdbc.entity.User">
+    <select id="getUserInfo" parameter="java.lang.Long" resultType="com.tiny.spring.test.jdbc.entity.User">
+        select *
+        from user
+        where id = ?
+    </select>
+</mapper>

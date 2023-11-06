@@ -25,5 +25,9 @@ public class JdbcTemplateFeatureTest {
         for (User user : userInfoListByNotSpecifyId) {
             System.out.println(user);
         }
+
+        System.out.println("sql session factory start------------");
+        User user = userService.getUserInfo(1L);
+        System.out.println(user);
     }
 }
