@@ -1,6 +1,7 @@
 package com.tiny.spring.beans.factory.support;
 
 import com.tiny.spring.beans.BeansException;
+import com.tiny.spring.beans.factory.FactoryBean;
 import com.tiny.spring.beans.factory.config.BeanDefinition;
 import com.tiny.spring.beans.factory.config.BeanPostProcessor;
 import com.tiny.spring.beans.factory.config.ConfigurableBeanFactory;
@@ -15,7 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @Blog: https://markuszhang.com
  * It's my honor to share what I've learned with you!
  */
-public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
+public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport implements ConfigurableBeanFactory {
 
     List<BeanPostProcessor> beanPostProcessors = new CopyOnWriteArrayList<>();
 
@@ -47,7 +48,16 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
                 }
             }
         }
+        singleton = getObjectForBeanInstance(singleton, beanName);
         return singleton;
+    }
+
+    protected Object getObjectForBeanInstance(Object beanInstance, String beanName) {
+        if (!(beanInstance instanceof FactoryBean)) {
+            return beanInstance;
+        }
+        FactoryBean<?> factoryBean = (FactoryBean<?>) beanInstance;
+        return getObjectFromFactoryBean(factoryBean, beanName);
     }
 
     public List<BeanPostProcessor> getBeanPostProcessors() {
