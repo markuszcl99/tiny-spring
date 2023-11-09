@@ -1,4 +1,4 @@
-package com.tiny.spring.aop;
+package com.tiny.spring.aop.framework;
 
 import com.tiny.spring.beans.factory.FactoryBean;
 import com.tiny.spring.util.ClassUtils;
@@ -12,12 +12,28 @@ import com.tiny.spring.util.ClassUtils;
  */
 public class ProxyFactoryBean implements FactoryBean<Object> {
 
+    private AopProxyFactory aopProxyFactory;
     private String[] interceptorNames;
     private String targetName;
     private Object target;
     private ClassLoader proxyClassLoader = ClassUtils.getDefaultClassLoader();
     private Object singletonInstance;
 
+    public ProxyFactoryBean() {
+        this.aopProxyFactory = new DefaultAopProxyFactory();
+    }
+
+    public ProxyFactoryBean(AopProxyFactory aopProxyFactory) {
+        this.aopProxyFactory = aopProxyFactory;
+    }
+
+    public AopProxyFactory getAopProxyFactory() {
+        return this.aopProxyFactory;
+    }
+
+    protected AopProxy createAopProxy() {
+        return getAopProxyFactory().createAopProxy();
+    }
 
     @Override
     public Object getObject() throws Exception {
