@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <beans>
     <bean id="helloworld" class="com.tiny.spring.test.mvc.controller.HelloWorldMVCBean"/>
+    <bean id="aopHelloWorld" class="com.tiny.spring.test.aop.AopHelloWorldController"/>
     <bean id="webBindingInitializer" class="com.tiny.spring.test.mvc.editor.DateInitializer"/>
     <bean id="objectMapper" class="com.tiny.spring.web.http.convert.DefaultObjectMapper">
         <property type="String" name="dateFormat" value="yyyy/MM/dd"/>

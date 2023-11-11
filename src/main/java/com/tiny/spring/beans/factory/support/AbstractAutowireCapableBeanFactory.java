@@ -1,5 +1,6 @@
 package com.tiny.spring.beans.factory.support;
 
+import com.sun.istack.internal.Nullable;
 import com.tiny.spring.beans.BeansException;
 import com.tiny.spring.beans.factory.*;
 import com.tiny.spring.beans.factory.config.AutowireCapableBeanFactory;
@@ -19,6 +20,14 @@ import java.lang.reflect.Method;
  * It's my honor to share what I've learned with you!
  */
 public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory implements AutowireCapableBeanFactory {
+
+
+    public AbstractAutowireCapableBeanFactory() {
+    }
+
+    public AbstractAutowireCapableBeanFactory(@Nullable BeanFactory parentBeanFactory) {
+        setParentBeanFactory(parentBeanFactory);
+    }
 
     @Override
     protected Object createBean(String beanName, BeanDefinition beanDefinition) throws BeansException {

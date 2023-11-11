@@ -1,6 +1,8 @@
 package com.tiny.spring.beans.factory.support;
 
+import com.sun.istack.internal.Nullable;
 import com.tiny.spring.beans.BeansException;
+import com.tiny.spring.beans.factory.BeanFactory;
 import com.tiny.spring.beans.factory.NoSuchBeanDefinitionException;
 import com.tiny.spring.beans.factory.config.BeanDefinition;
 import com.tiny.spring.beans.factory.config.ConfigurableListableBeanFactory;
@@ -26,8 +28,16 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
     private final Map<Class<?>, String[]> singletonBeanNamesByType = new ConcurrentHashMap<>(64);
 
-    @Override
+    public DefaultListableBeanFactory() {
+        super();
+    }
 
+    public DefaultListableBeanFactory(@Nullable BeanFactory parentBeanFactory) {
+        super(parentBeanFactory);
+    }
+
+
+    @Override
     public boolean containsBean(String beanName) {
         // 实际上要复杂一些，还需要判断父容器等等，我们这里只判断容器中是否有Bean实例或者Bean定义即可
         return containsSingleton(beanName) || containsBeanDefinition(beanName);

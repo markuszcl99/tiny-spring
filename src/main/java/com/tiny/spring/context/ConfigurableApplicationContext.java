@@ -18,4 +18,6 @@ public interface ConfigurableApplicationContext extends ApplicationContext {
     void setParent(ApplicationContext parent);
 
     void refresh() throws BeansException, IllegalStateException;
+
+    ConfigurableBeanFactory getBeanFactory();
 }

@@ -2,6 +2,7 @@ package com.tiny.spring.context.support;
 
 import com.sun.istack.internal.Nullable;
 import com.tiny.spring.beans.BeansException;
+import com.tiny.spring.beans.factory.BeanFactory;
 import com.tiny.spring.beans.factory.NoSuchBeanDefinitionException;
 import com.tiny.spring.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import com.tiny.spring.beans.factory.config.AutowireCapableBeanFactory;
@@ -123,11 +124,28 @@ public abstract class AbstractApplicationContext implements ConfigurableApplicat
     }
 
     protected DefaultListableBeanFactory obtainFreshBeanFactory() {
-        DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+        refreshBeanFactory();
+        return getBeanFactory();
+    }
+
+    /**
+     * 实际上 这个是由 org.springframework.context.support.AbstractRefreshableApplicationContext 实现的
+     * 这里 我们现在AbstractApplicationContext中实现
+     */
+    private void refreshBeanFactory() {
+        DefaultListableBeanFactory beanFactory = createBeanFactory();
         this.beanFactory = beanFactory;
         // 扫描BeanDefinition定义
         this.loadBeanDefinitions(beanFactory);
-        return beanFactory;
+    }
+
+    private DefaultListableBeanFactory createBeanFactory() {
+        return new DefaultListableBeanFactory(getInternalParentBeanFactory());
+    }
+
+    private BeanFactory getInternalParentBeanFactory() {
+        return (getParent() instanceof ConfigurableApplicationContext) ?
+                ((ConfigurableApplicationContext) getParent()).getBeanFactory() : getParent();
     }
 
     protected void prepareBeanFactory(DefaultListableBeanFactory beanFactory) {

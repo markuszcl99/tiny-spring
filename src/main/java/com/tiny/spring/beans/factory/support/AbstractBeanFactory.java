@@ -1,7 +1,11 @@
 package com.tiny.spring.beans.factory.support;
 
+import com.sun.istack.internal.Nullable;
 import com.tiny.spring.beans.BeansException;
+import com.tiny.spring.beans.factory.BeanFactory;
+import com.tiny.spring.beans.factory.BeanFactoryUtils;
 import com.tiny.spring.beans.factory.FactoryBean;
+import com.tiny.spring.beans.factory.NoSuchBeanDefinitionException;
 import com.tiny.spring.beans.factory.config.BeanDefinition;
 import com.tiny.spring.beans.factory.config.BeanPostProcessor;
 import com.tiny.spring.beans.factory.config.ConfigurableBeanFactory;
@@ -20,6 +24,12 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
     List<BeanPostProcessor> beanPostProcessors = new CopyOnWriteArrayList<>();
 
+    /**
+     * 父容器，可能为空
+     */
+    @Nullable
+    private BeanFactory parentBeanFactory;
+
     @Override
     public Object getBean(String beanName) throws BeansException {
         return doGetBean(beanName);
@@ -29,6 +39,13 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
         // 先尝试直接拿bean实例
         Object singleton = getSingleton(beanName);
         if (singleton == null) {
+            // 先去父容器里去看一下
+            // Check if bean definition exists in this factory.
+            BeanFactory parentBeanFactory = getParentBeanFactory();
+            if (parentBeanFactory != null && !containsBeanDefinition(beanName)) {
+                return parentBeanFactory.getBean(beanName);
+            }
+
             // 如果没有实例，则尝试从早期Bean引用缓存中去获取一下 todo 先在这里获取下，后续会像spring源码一样 抽象到DefaultSingletonBeanRegistry中去。
             singleton = this.earlySingletonObjects.get(beanName);
             if (singleton == null) {
@@ -76,6 +93,36 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
         return this.beanPostProcessors.size();
     }
 
+    @Override
+    public boolean isFactoryBean(String beanName) throws NoSuchBeanDefinitionException {
+        Object beanInstance = getSingleton(beanName);
+        if (beanInstance != null) {
+            return (beanInstance instanceof FactoryBean);
+        }
+        return false;
+    }
+
+    @Override
+    public void setParentBeanFactory(BeanFactory parentBeanFactory) throws IllegalStateException {
+        this.parentBeanFactory = parentBeanFactory;
+    }
+
+    //---------------------------------------------------------------------
+    // Implementation of HierarchicalBeanFactory interface
+    //---------------------------------------------------------------------
+
+    @Override
+    public BeanFactory getParentBeanFactory() {
+        return this.parentBeanFactory;
+    }
+
+    @Override
+    public boolean containsLocalBean(String beanName) {
+        return ((containsSingleton(beanName) || containsBeanDefinition(beanName)) &&
+                (!BeanFactoryUtils.isFactoryDereference(beanName) || isFactoryBean(beanName)));
+    }
+
+
     //---------------------------------------------------------------------
     // Abstract methods to be implemented by subclasses
     //---------------------------------------------------------------------
@@ -98,4 +145,6 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
      * @throws BeansException
      */
     protected abstract BeanDefinition getBeanDefinition(String beanName) throws BeansException;
+
+    protected abstract boolean containsBeanDefinition(String beanName);
 }

@@ -10,6 +10,9 @@ import com.tiny.spring.beans.BeansException;
  * It's my honor to share what I've learned with you!
  */
 public interface BeanFactory {
+
+    String FACTORY_BEAN_PREFIX = "&";
+
     /**
      * 根据beanName获取Bean实例
      *
