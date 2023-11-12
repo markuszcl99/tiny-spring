@@ -1,6 +1,7 @@
-package com.tiny.spring.aop.framework.support;
+package com.tiny.spring.aop.support;
 
 import com.tiny.spring.aop.Advisor;
+import com.tiny.spring.aop.aopalliance.aop.Advice;
 import com.tiny.spring.aop.aopalliance.intercept.MethodInterceptor;
 
 /**
@@ -29,5 +30,10 @@ public class DefaultAdvisor implements Advisor {
     @Override
     public void setMethodInterceptor(MethodInterceptor methodInterceptor) {
         this.methodInterceptor = methodInterceptor;
+    }
+
+    @Override
+    public Advice getAdvice() {
+        return this.methodInterceptor;
     }
 }

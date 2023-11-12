@@ -4,7 +4,8 @@ import com.tiny.spring.aop.*;
 import com.tiny.spring.aop.aopalliance.intercept.MethodInterceptor;
 import com.tiny.spring.aop.framework.adapter.AfterReturningAdviceInterceptor;
 import com.tiny.spring.aop.framework.adapter.MethodBeforeAdviceInterceptor;
-import com.tiny.spring.aop.framework.support.DefaultAdvisor;
+import com.tiny.spring.aop.support.DefaultAdvisor;
+import com.tiny.spring.aop.support.NameMatchMethodPointcutAdvisor;
 import com.tiny.spring.beans.factory.BeanFactory;
 import com.tiny.spring.beans.factory.BeanFactoryAware;
 import com.tiny.spring.beans.factory.FactoryBean;
@@ -22,7 +23,7 @@ public class ProxyFactoryBean implements FactoryBean<Object>, BeanFactoryAware {
     private AopProxyFactory aopProxyFactory;
     private BeanFactory beanFactory;
     private String interceptorName;
-    private Advisor advisor;
+    private PointcutAdvisor advisor;
     private String targetName;
     private Object target;
     private ClassLoader proxyClassLoader = ClassUtils.getDefaultClassLoader();
@@ -37,19 +38,8 @@ public class ProxyFactoryBean implements FactoryBean<Object>, BeanFactoryAware {
     }
 
     private synchronized void initializeAdvisor() {
-        Object advice = null;
-        MethodInterceptor mi = null;
-        advice = this.beanFactory.getBean(this.interceptorName);
-
-        if (advice instanceof BeforeAdvice) {
-            mi = new MethodBeforeAdviceInterceptor((MethodBeforeAdvice) advice);
-        } else if (advice instanceof AfterAdvice) {
-            mi = new AfterReturningAdviceInterceptor((AfterReturningAdvice) advice);
-        } else if (advice instanceof MethodInterceptor) {
-            mi = (MethodInterceptor) advice;
-        }
-        advisor = new DefaultAdvisor();
-        advisor.setMethodInterceptor(mi);
+        Object advice = this.beanFactory.getBean(this.interceptorName);
+        this.advisor = (PointcutAdvisor) advice;
     }
 
 

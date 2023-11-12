@@ -1,6 +1,7 @@
 package com.tiny.spring.aop.framework;
 
 import com.tiny.spring.aop.Advisor;
+import com.tiny.spring.aop.PointcutAdvisor;
 
 /**
  * @author: markus
@@ -11,7 +12,7 @@ import com.tiny.spring.aop.Advisor;
  */
 public class DefaultAopProxyFactory implements AopProxyFactory {
     @Override
-    public AopProxy createAopProxy(Object target, Advisor advisor) {
+    public AopProxy createAopProxy(Object target, PointcutAdvisor advisor) {
         // 先默认返回jdk代理
         return new JdkDynamicAopProxy(target, advisor);
     }

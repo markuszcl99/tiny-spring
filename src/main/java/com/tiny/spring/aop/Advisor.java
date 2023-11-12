@@ -1,5 +1,6 @@
 package com.tiny.spring.aop;
 
+import com.tiny.spring.aop.aopalliance.aop.Advice;
 import com.tiny.spring.aop.aopalliance.intercept.MethodInterceptor;
 
 /**
@@ -13,4 +14,7 @@ public interface Advisor {
     MethodInterceptor getMethodInterceptor();
 
     void setMethodInterceptor(MethodInterceptor methodInterceptor);
+
+    Advice getAdvice();
+
 }
