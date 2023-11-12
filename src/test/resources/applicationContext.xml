@@ -49,14 +49,17 @@
     <!--jdbc 相关内容 end-->
 
     <!-- aop 相关bean-->
-    <bean id="realAction" class="com.tiny.spring.test.aop.ActionImpl"/>
-    <bean id="myAfterReturningAdvice" class="com.tiny.spring.test.aop.MyAfterReturningAdvice"/>
     <bean id="advisor" class="com.tiny.spring.aop.support.NameMatchMethodPointcutAdvisor">
         <property type="com.tiny.spring.aop.aopalliance.aop.Advice" name="advice" ref="myAfterReturningAdvice"/>
-        <property type="String" name="mappedName" value="do*"/>
+        <!--目标代理方法匹配-->
+        <property type="String" name="mappedName" value="*Acti*n"/>
     </bean>
-    <bean id="action" class="com.tiny.spring.aop.framework.ProxyFactoryBean">
-        <property name="target" type="java.lang.Object" ref="realAction"/>
-        <property name="interceptorName" type="java.lang.String" value="advisor"/>
+    <bean id="autoProxyCreator" class="com.tiny.spring.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <!--目标代理对象匹配-->
+        <property type="String" name="pattern" value="*Action*"/>
+        <property type="String" name="interceptorName" value="advisor"/>
     </bean>
+    <bean id="realAction" class="com.tiny.spring.test.aop.ActionImpl"/>
+    <bean id="myAfterReturningAdvice" class="com.tiny.spring.test.aop.MyAfterReturningAdvice"/>
+    <!-- aop 相关bean end-->
 </beans>

@@ -81,6 +81,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
         return this.beanPostProcessors;
     }
 
+    public void addBeanPostProcessors(List<BeanPostProcessor> postProcessors) {
+        this.beanPostProcessors.removeAll(postProcessors);
+        this.beanPostProcessors.addAll(postProcessors);
+    }
+
     @Override
     public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
         // 先删除一下，避免重复添加
@@ -106,9 +111,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
     public void setParentBeanFactory(BeanFactory parentBeanFactory) throws IllegalStateException {
         this.parentBeanFactory = parentBeanFactory;
     }
-
     //---------------------------------------------------------------------
     // Implementation of HierarchicalBeanFactory interface
+
     //---------------------------------------------------------------------
 
     @Override
@@ -122,9 +127,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
                 (!BeanFactoryUtils.isFactoryDereference(beanName) || isFactoryBean(beanName)));
     }
 
-
     //---------------------------------------------------------------------
     // Abstract methods to be implemented by subclasses
+
     //---------------------------------------------------------------------
 
     /**

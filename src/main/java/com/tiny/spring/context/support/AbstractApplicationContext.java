@@ -169,6 +169,9 @@ public abstract class AbstractApplicationContext implements ConfigurableApplicat
         // 这里注册一下ApplicationContextAwareProcessor
         ApplicationContextAwareProcessor applicationContextAwareProcessor = new ApplicationContextAwareProcessor(this);
         beanFactory.addBeanPostProcessor(applicationContextAwareProcessor);
+
+        // 注册IoC容器中配置的BeanPostProcessor
+        PostProcessorRegistrationDelegate.registerBeanPostProcessors(beanFactory, this);
     }
 
     protected void initApplicationEventMulticaster() {

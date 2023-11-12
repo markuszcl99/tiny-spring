@@ -19,12 +19,12 @@ import com.tiny.spring.web.bind.annotation.ResponseBody;
 public class AopHelloWorldController {
 
     @Autowired
-    IAction action;
+    IAction realAction;
 
     @RequestMapping("/action")
     @ResponseBody
     public User doTestAop() {
-        action.doAction();
+        realAction.doAction();
         User user = new User();
         user.setAge(18);
         user.setName("test aop, hello world");

@@ -75,6 +75,10 @@ public class ProxyFactoryBean implements FactoryBean<Object>, BeanFactoryAware {
         return getAopProxyFactory().createAopProxy(target, advisor);
     }
 
+    public void setAopProxyFactory(AopProxyFactory aopProxyFactory) {
+        this.aopProxyFactory = aopProxyFactory;
+    }
+
     @Override
     public Object getObject() throws Exception {
         // 初始化advisor
