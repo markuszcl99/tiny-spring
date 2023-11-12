@@ -35,6 +35,7 @@ public class BeanDefinition {
     }
 
     public BeanDefinition(String id, String className) {
+        this();
         this.id = id;
         this.className = className;
         try {
