@@ -31,13 +31,49 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
         return this.aopProxyFactory;
     }
 
+    public Object getTarget() {
+        return target;
+    }
+
+    public void setTarget(Object target) {
+        this.target = target;
+    }
+
+    public String[] getInterceptorNames() {
+        return interceptorNames;
+    }
+
+    public void setInterceptorNames(String[] interceptorNames) {
+        this.interceptorNames = interceptorNames;
+    }
+
+    public String getTargetName() {
+        return targetName;
+    }
+
+    public void setTargetName(String targetName) {
+        this.targetName = targetName;
+    }
+
     protected AopProxy createAopProxy() {
-        return getAopProxyFactory().createAopProxy();
+        return getAopProxyFactory().createAopProxy(target);
     }
 
     @Override
     public Object getObject() throws Exception {
-        return null;
+        return getSingletonInstance();
+    }
+
+    private synchronized Object getSingletonInstance() {
+        // 获取代理
+        if (this.singletonInstance == null) {
+            this.singletonInstance = getProxy(createAopProxy());
+        }
+        return this.singletonInstance;
+    }
+
+    private Object getProxy(AopProxy aopProxy) {
+        return aopProxy.getProxy();
     }
 
     @Override

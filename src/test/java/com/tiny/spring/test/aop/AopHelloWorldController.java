@@ -2,6 +2,7 @@ package com.tiny.spring.test.aop;
 
 import com.tiny.spring.beans.factory.annotation.Autowired;
 import com.tiny.spring.stereotype.Controller;
+import com.tiny.spring.test.jdbc.entity.User;
 import com.tiny.spring.web.bind.annotation.RequestMapping;
 import com.tiny.spring.web.bind.annotation.ResponseBody;
 
@@ -21,8 +22,13 @@ public class AopHelloWorldController {
     IAction action;
 
     @RequestMapping("/action")
-    public String doTestAop() {
+    @ResponseBody
+    public User doTestAop() {
         action.doAction();
-        return "test aop, hello world";
+        User user = new User();
+        user.setAge(18);
+        user.setName("test aop, hello world");
+        user.setId(1L);
+        return user;
     }
 }

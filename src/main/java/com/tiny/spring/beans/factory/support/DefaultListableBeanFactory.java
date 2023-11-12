@@ -40,7 +40,8 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
     @Override
     public boolean containsBean(String beanName) {
         // 实际上要复杂一些，还需要判断父容器等等，我们这里只判断容器中是否有Bean实例或者Bean定义即可
-        return containsSingleton(beanName) || containsBeanDefinition(beanName);
+        // bugfix containsBeanDefinition(beanName) 这一步不需要判断，就是要看下容器中是否有该bean实例，所以不能判断BeanDefinition
+        return containsSingleton(beanName);
     }
 
     @Override

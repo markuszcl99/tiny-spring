@@ -20,7 +20,7 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
     protected Object getObjectFromFactoryBean(FactoryBean<?> factoryBean, String beanName) {
         Object object = doGetObjectFromFactoryBean(factoryBean, beanName);
         try {
-            object = postProcessObjectFromFactoryBean(factoryBean, beanName);
+            object = postProcessObjectFromFactoryBean(object, beanName);
         } catch (BeansException ex) {
             ex.printStackTrace();
         }

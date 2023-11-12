@@ -8,5 +8,5 @@ package com.tiny.spring.aop.framework;
  * It's my honor to share what I've learned with you!
  */
 public interface AopProxyFactory {
-    AopProxy createAopProxy();
+    AopProxy createAopProxy(Object target);
 }
