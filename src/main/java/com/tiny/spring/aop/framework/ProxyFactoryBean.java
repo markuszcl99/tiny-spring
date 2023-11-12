@@ -1,5 +1,7 @@
 package com.tiny.spring.aop.framework;
 
+import com.tiny.spring.aop.*;
+import com.tiny.spring.aop.aopalliance.intercept.MethodInterceptor;
 import com.tiny.spring.aop.framework.adapter.AfterReturningAdviceInterceptor;
 import com.tiny.spring.aop.framework.adapter.MethodBeforeAdviceInterceptor;
 import com.tiny.spring.aop.framework.support.DefaultAdvisor;
@@ -7,8 +9,6 @@ import com.tiny.spring.beans.factory.BeanFactory;
 import com.tiny.spring.beans.factory.BeanFactoryAware;
 import com.tiny.spring.beans.factory.FactoryBean;
 import com.tiny.spring.util.ClassUtils;
-
-import java.lang.reflect.Method;
 
 /**
  * @author: markus

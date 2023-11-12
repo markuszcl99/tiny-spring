@@ -1,4 +1,6 @@
-package com.tiny.spring.aop.framework;
+package com.tiny.spring.aop;
+
+import com.tiny.spring.aop.aopalliance.aop.Advice;
 
 /**
  * @author: markus

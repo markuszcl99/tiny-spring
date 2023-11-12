@@ -1,5 +1,9 @@
 package com.tiny.spring.aop.framework;
 
+import com.tiny.spring.aop.Advisor;
+import com.tiny.spring.aop.aopalliance.intercept.MethodInterceptor;
+import com.tiny.spring.aop.aopalliance.intercept.MethodInvocation;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;

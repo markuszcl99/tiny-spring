@@ -1,6 +1,6 @@
 package com.tiny.spring.test.aop;
 
-import com.tiny.spring.aop.framework.AfterReturningAdvice;
+import com.tiny.spring.aop.AfterReturningAdvice;
 
 import java.lang.reflect.Method;
 

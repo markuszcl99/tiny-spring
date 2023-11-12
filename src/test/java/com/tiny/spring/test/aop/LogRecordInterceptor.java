@@ -1,7 +1,7 @@
 package com.tiny.spring.test.aop;
 
-import com.tiny.spring.aop.framework.MethodInterceptor;
-import com.tiny.spring.aop.framework.MethodInvocation;
+import com.tiny.spring.aop.aopalliance.intercept.MethodInterceptor;
+import com.tiny.spring.aop.aopalliance.intercept.MethodInvocation;
 
 /**
  * @author: markus

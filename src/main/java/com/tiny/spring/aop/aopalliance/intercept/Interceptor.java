@@ -1,4 +1,6 @@
-package com.tiny.spring.aop.framework;
+package com.tiny.spring.aop.aopalliance.intercept;
+
+import com.tiny.spring.aop.aopalliance.aop.Advice;
 
 /**
  * @author: markus
@@ -7,6 +9,6 @@ package com.tiny.spring.aop.framework;
  * @Blog: https://markuszhang.com
  * It's my honor to share what I've learned with you!
  */
-public interface Interceptor extends Advice{
+public interface Interceptor extends Advice {
 
 }

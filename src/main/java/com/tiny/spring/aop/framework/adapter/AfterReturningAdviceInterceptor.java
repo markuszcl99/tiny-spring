@@ -1,9 +1,9 @@
 package com.tiny.spring.aop.framework.adapter;
 
-import com.tiny.spring.aop.framework.AfterAdvice;
-import com.tiny.spring.aop.framework.AfterReturningAdvice;
-import com.tiny.spring.aop.framework.MethodInterceptor;
-import com.tiny.spring.aop.framework.MethodInvocation;
+import com.tiny.spring.aop.AfterAdvice;
+import com.tiny.spring.aop.AfterReturningAdvice;
+import com.tiny.spring.aop.aopalliance.intercept.MethodInterceptor;
+import com.tiny.spring.aop.aopalliance.intercept.MethodInvocation;
 
 /**
  * @author: markus

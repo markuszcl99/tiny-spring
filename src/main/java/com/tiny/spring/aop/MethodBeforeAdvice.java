@@ -1,4 +1,6 @@
-package com.tiny.spring.aop.framework;
+package com.tiny.spring.aop;
+
+import com.tiny.spring.aop.BeforeAdvice;
 
 import java.lang.reflect.Method;
 

@@ -1,5 +1,7 @@
 package com.tiny.spring.aop.framework;
 
+import com.tiny.spring.aop.aopalliance.intercept.MethodInvocation;
+
 import java.lang.reflect.Method;
 
 /**

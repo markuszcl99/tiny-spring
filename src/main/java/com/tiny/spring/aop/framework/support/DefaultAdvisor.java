@@ -1,7 +1,7 @@
 package com.tiny.spring.aop.framework.support;
 
-import com.tiny.spring.aop.framework.Advisor;
-import com.tiny.spring.aop.framework.MethodInterceptor;
+import com.tiny.spring.aop.Advisor;
+import com.tiny.spring.aop.aopalliance.intercept.MethodInterceptor;
 
 /**
  * @author: markus
