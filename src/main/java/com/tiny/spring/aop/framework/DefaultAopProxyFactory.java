@@ -7,10 +7,10 @@ package com.tiny.spring.aop.framework;
  * @Blog: https://markuszhang.com
  * It's my honor to share what I've learned with you!
  */
-public class DefaultAopProxyFactory implements AopProxyFactory{
+public class DefaultAopProxyFactory implements AopProxyFactory {
     @Override
-    public AopProxy createAopProxy(Object target) {
+    public AopProxy createAopProxy(Object target, Advisor advisor) {
         // 先默认返回jdk代理
-        return new JdkDynamicAopProxy(target);
+        return new JdkDynamicAopProxy(target, advisor);
     }
 }

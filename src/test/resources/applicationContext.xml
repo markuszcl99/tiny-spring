@@ -49,8 +49,11 @@
     <!--jdbc 相关内容 end-->
 
     <!-- aop 相关bean-->
+    <bean id="myInterceptor" class="com.tiny.spring.test.aop.LogRecordInterceptor"/>
+    <bean id="myAfterReturningAdvice" class="com.tiny.spring.test.aop.MyAfterReturningAdvice"/>
     <bean id="realAction" class="com.tiny.spring.test.aop.ActionImpl"/>
     <bean id="action" class="com.tiny.spring.aop.framework.ProxyFactoryBean">
         <property name="target" type="java.lang.Object" ref="realAction"/>
+        <property name="interceptorName" type="java.lang.String" value="myAfterReturningAdvice"/>
     </bean>
 </beans>

@@ -1,7 +1,14 @@
 package com.tiny.spring.aop.framework;
 
+import com.tiny.spring.aop.framework.adapter.AfterReturningAdviceInterceptor;
+import com.tiny.spring.aop.framework.adapter.MethodBeforeAdviceInterceptor;
+import com.tiny.spring.aop.framework.support.DefaultAdvisor;
+import com.tiny.spring.beans.factory.BeanFactory;
+import com.tiny.spring.beans.factory.BeanFactoryAware;
 import com.tiny.spring.beans.factory.FactoryBean;
 import com.tiny.spring.util.ClassUtils;
+
+import java.lang.reflect.Method;
 
 /**
  * @author: markus
@@ -10,10 +17,12 @@ import com.tiny.spring.util.ClassUtils;
  * @Blog: https://markuszhang.com
  * It's my honor to share what I've learned with you!
  */
-public class ProxyFactoryBean implements FactoryBean<Object> {
+public class ProxyFactoryBean implements FactoryBean<Object>, BeanFactoryAware {
 
     private AopProxyFactory aopProxyFactory;
-    private String[] interceptorNames;
+    private BeanFactory beanFactory;
+    private String interceptorName;
+    private Advisor advisor;
     private String targetName;
     private Object target;
     private ClassLoader proxyClassLoader = ClassUtils.getDefaultClassLoader();
@@ -27,6 +36,23 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
         this.aopProxyFactory = aopProxyFactory;
     }
 
+    private synchronized void initializeAdvisor() {
+        Object advice = null;
+        MethodInterceptor mi = null;
+        advice = this.beanFactory.getBean(this.interceptorName);
+
+        if (advice instanceof BeforeAdvice) {
+            mi = new MethodBeforeAdviceInterceptor((MethodBeforeAdvice) advice);
+        } else if (advice instanceof AfterAdvice) {
+            mi = new AfterReturningAdviceInterceptor((AfterReturningAdvice) advice);
+        } else if (advice instanceof MethodInterceptor) {
+            mi = (MethodInterceptor) advice;
+        }
+        advisor = new DefaultAdvisor();
+        advisor.setMethodInterceptor(mi);
+    }
+
+
     public AopProxyFactory getAopProxyFactory() {
         return this.aopProxyFactory;
     }
@@ -39,12 +65,12 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
         this.target = target;
     }
 
-    public String[] getInterceptorNames() {
-        return interceptorNames;
+    public String getInterceptorName() {
+        return interceptorName;
     }
 
-    public void setInterceptorNames(String[] interceptorNames) {
-        this.interceptorNames = interceptorNames;
+    public void setInterceptorName(String interceptorName) {
+        this.interceptorName = interceptorName;
     }
 
     public String getTargetName() {
@@ -56,11 +82,13 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
     }
 
     protected AopProxy createAopProxy() {
-        return getAopProxyFactory().createAopProxy(target);
+        return getAopProxyFactory().createAopProxy(target, advisor);
     }
 
     @Override
     public Object getObject() throws Exception {
+        // 初始化advisor
+        initializeAdvisor();
         return getSingletonInstance();
     }
 
@@ -79,5 +107,10 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
     @Override
     public Class<?> getObjectType() {
         return null;
+    }
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) {
+        this.beanFactory = beanFactory;
     }
 }
